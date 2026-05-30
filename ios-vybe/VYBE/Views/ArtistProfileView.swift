@@ -63,6 +63,7 @@ struct ArtistProfileView: View {
                     .foregroundStyle(.white.opacity(0.8))
                 HStack(spacing: 6) {
                     ForEach(artist.tags, id: \.self) { NeonTag(text: $0, color: VYBE.purple) }
+                    NeonTag(text: "Open to Collab", color: VYBE.green, icon: "person.2.wave.2.fill")
                 }
                 .padding(.top, 2)
             }

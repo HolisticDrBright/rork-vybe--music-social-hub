@@ -25,6 +25,12 @@ struct HomeView: View {
                     SectionHeader(title: "🔥 Trending Now")
                     trendingStrip
 
+                    // Collab drops born on VYBE
+                    if !app.upcomingDrops.isEmpty {
+                        SectionHeader(title: "✨ Born on VYBE")
+                        bornOnVYBEStrip
+                    }
+
                     // Dynamic feed
                     SectionHeader(title: "Your Feed")
                     VStack(spacing: 14) {
@@ -146,6 +152,46 @@ struct HomeView: View {
             .padding(.horizontal, 20)
         }
         .padding(.horizontal, -20)
+    }
+
+    private var bornOnVYBEStrip: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 14) {
+                ForEach(app.upcomingDrops) { drop in
+                    NavigationLink(value: Route.upcomingDrop(drop.id)) {
+                        BornOnVYBECard(drop: drop)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, 20)
+        }
+        .padding(.horizontal, -20)
+    }
+}
+
+struct BornOnVYBECard: View {
+    let drop: UpcomingDrop
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HoloArt(seed: drop.previewSeed, corner: 18)
+                .frame(width: 200, height: 130)
+                .overlay(alignment: .topLeading) {
+                    NeonTag(text: "Born on VYBE", color: VYBE.cyan, icon: "sparkles").padding(8)
+                }
+                .overlay(alignment: .bottomLeading) {
+                    Text("Started as an Open Beat Challenge")
+                        .font(.system(size: 10, weight: .heavy, design: .rounded)).foregroundStyle(.white)
+                        .padding(.horizontal, 8).padding(.vertical, 4)
+                        .background(.black.opacity(0.5), in: .capsule).padding(8)
+                }
+            Text(drop.title)
+                .font(.system(size: 14, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text).lineLimit(2)
+                .frame(width: 200, alignment: .leading)
+            Text(drop.artistNames.joined(separator: " × "))
+                .font(.system(size: 12, weight: .semibold)).foregroundStyle(VYBE.magenta).lineLimit(1)
+        }
+        .frame(width: 200)
     }
 }
 

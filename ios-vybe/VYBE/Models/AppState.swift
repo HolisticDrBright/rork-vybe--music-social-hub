@@ -90,6 +90,20 @@ final class AppState {
     /// Genres surfaced through discovery — feeds the "Music Personality" section.
     var discoveredGenres: Set<String> = []
 
+    // --- Collab Lab (artist-to-artist collaboration) ---
+    /// The artist the user is acting as on the artist side (creator of "My Challenges").
+    let collabArtistId = Mock.collabArtistId
+    /// Live, mutable collab state (prototype: local @Observable mutations).
+    var collabChallenges: [CollabChallenge] = Mock.collabChallenges
+    var collabSubmissions: [CollabSubmission] = Mock.collabSubmissions
+    var upcomingDrops: [UpcomingDrop] = Mock.upcomingDrops
+    /// Open challenges the user has submitted to.
+    var submittedChallengeIds: Set<String> = []
+    /// Upcoming drops the fan has pre-saved / supported early.
+    var presavedDrops: Set<String> = []
+    /// Collab-related fan badges earned ("First Heard It", "Collab Scout").
+    var collabBadges: Set<String> = []
+
     // --- Haptic feedback helper ---
     func haptic(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
         UIImpactFeedbackGenerator(style: style).impactOccurred()
@@ -228,6 +242,111 @@ final class AppState {
         receiptHistory.append(receipt)
         hapticSuccess()
         return receipt
+    }
+
+    // MARK: - Collab Lab
+
+    func collabChallenge(_ id: String) -> CollabChallenge? { collabChallenges.first { $0.id == id } }
+
+    /// Challenges created by the artist the user is acting as.
+    var myChallenges: [CollabChallenge] { collabChallenges.filter { $0.creatorArtistId == collabArtistId } }
+    /// Open challenges from other artists the user can submit to.
+    var openChallenges: [CollabChallenge] { collabChallenges.filter { $0.status == .open && $0.creatorArtistId != collabArtistId } }
+    /// The user's own outgoing submissions.
+    var mySubmissions: [CollabSubmission] { collabSubmissions.filter { submittedChallengeIds.contains($0.challengeId) && $0.artistName == "You" } }
+
+    func submissions(for challengeId: String) -> [CollabSubmission] {
+        collabSubmissions.filter { $0.challengeId == challengeId }
+    }
+    /// Total incoming submissions across the user's challenges.
+    var incomingSubmissionCount: Int {
+        myChallenges.reduce(0) { $0 + submissions(for: $1.id).count }
+    }
+
+    private func updateChallenge(_ id: String, _ mutate: (inout CollabChallenge) -> Void) {
+        if let i = collabChallenges.firstIndex(where: { $0.id == id }) { mutate(&collabChallenges[i]) }
+    }
+    private func updateSubmission(_ id: String, _ mutate: (inout CollabSubmission) -> Void) {
+        if let i = collabSubmissions.firstIndex(where: { $0.id == id }) { mutate(&collabSubmissions[i]) }
+    }
+
+    /// Post a new challenge (appears under "My Challenges").
+    func createChallenge(_ challenge: CollabChallenge) {
+        withAnimation(.snappy) { collabChallenges.insert(challenge, at: 0) }
+        addScore(150, reason: "Posted a Collab Lab challenge")
+        hapticSuccess()
+    }
+
+    /// Submit a creative response to an open challenge.
+    func submit(_ submission: CollabSubmission) {
+        withAnimation(.snappy) {
+            collabSubmissions.insert(submission, at: 0)
+            submittedChallengeIds.insert(submission.challengeId)
+            updateChallenge(submission.challengeId) { $0.submissionCount += 1 }
+        }
+        addScore(200, reason: "Submitted to a Collab Lab challenge")
+        hapticSuccess()
+    }
+
+    func toggleShortlist(_ submissionId: String) {
+        updateSubmission(submissionId) { sub in
+            sub.status = (sub.status == .shortlisted) ? .submitted : .shortlisted
+        }
+        haptic(.light)
+    }
+    func reactToSubmission(_ submissionId: String) {
+        updateSubmission(submissionId) { $0.reactions += 1 }
+        haptic(.light)
+    }
+    func declineSubmission(_ submissionId: String) {
+        updateSubmission(submissionId) { $0.status = .declined }
+        haptic(.light)
+    }
+
+    /// Pick a winner: converts the challenge into an Upcoming Drop and returns it.
+    @discardableResult
+    func pickWinner(submissionId: String, challengeId: String) -> UpcomingDrop {
+        let winner = collabSubmissions.first { $0.id == submissionId }
+        let challenge = collabChallenge(challengeId)
+        updateSubmission(submissionId) { $0.status = .selected }
+        updateChallenge(challengeId) { ch in
+            ch.status = .convertedToDrop
+            ch.selectedSubmissionId = submissionId
+        }
+        let creator = challenge?.creatorName ?? "You"
+        let collaborator = winner?.artistName ?? "Featured Artist"
+        let beat = challenge?.beatTitle ?? "Untitled"
+        let drop = UpcomingDrop(
+            id: "ud-\(challengeId)-\(Int(Date().timeIntervalSince1970))",
+            title: "\(beat) (feat. \(collaborator))",
+            artistNames: [creator, collaborator],
+            originChallengeId: challengeId,
+            bornOnVYBE: true,
+            description: "Born on VYBE — started as \(creator)'s \(challenge?.challengeType.label ?? "Collab") challenge. \(collaborator) won the feature.",
+            genre: challenge?.genre ?? "Music",
+            earlySupporters: 0,
+            previewSeed: challenge?.previewSeed ?? beat,
+            splitNote: challenge?.proposedSplit ?? "50/50 (placeholder)",
+            releaseText: "Upcoming")
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+            upcomingDrops.insert(drop, at: 0)
+        }
+        addScore(500, reason: "Started a collab")
+        hapticSuccess()
+        return drop
+    }
+
+    /// Fan pre-saves / supports an upcoming collab drop early.
+    func presaveDrop(_ dropId: String) {
+        guard !presavedDrops.contains(dropId) else { return }
+        presavedDrops.insert(dropId)
+        if let i = upcomingDrops.firstIndex(where: { $0.id == dropId }) {
+            upcomingDrops[i].earlySupporters += 1
+        }
+        collabBadges.insert("First Heard It")
+        collabBadges.insert("Collab Scout")
+        addScore(180, reason: "Pre-saved a collab drop early")
+        hapticSuccess()
     }
 
     // MARK: - VYBE Loop

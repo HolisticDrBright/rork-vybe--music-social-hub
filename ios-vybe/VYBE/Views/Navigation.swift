@@ -24,6 +24,10 @@ enum Route: Hashable {
     case vibeCheck              // Vibe Check emotion-based discovery
     case hiddenGems             // "Unknowns Like Your Favorites" discovery engine
     case soundsLike(String)     // Hidden Gems pre-seeded with a specific anchor
+    case collabLab              // Collab Lab — artist-to-artist collaboration
+    case collabChallenge(String)// Collab challenge detail
+    case collabReview(String)   // Creator review mode for a challenge
+    case upcomingDrop(String)   // Upcoming collab drop detail
 }
 
 extension View {
@@ -47,6 +51,10 @@ extension View {
             case .vibeCheck: VibeCheckView()
             case .hiddenGems: HiddenGemsView()
             case .soundsLike(let anchor): HiddenGemsView(seedAnchor: anchor)
+            case .collabLab: CollabLabView()
+            case .collabChallenge(let id): CollabChallengeDetailView(challengeId: id)
+            case .collabReview(let id): SubmissionReviewView(challengeId: id)
+            case .upcomingDrop(let id): UpcomingDropView(dropId: id)
             }
         }
     }

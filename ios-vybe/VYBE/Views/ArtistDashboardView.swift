@@ -9,6 +9,7 @@ struct ArtistDashboardView: View {
     @Environment(AppState.self) private var app
     @State private var aiTwinEnabled = true
     @State private var showLaunch = false
+    @State private var showCollabCreate = false
     @State private var rewardedFan: String? = nil
 
     /// The artist whose dashboard this is (the demo "you, the artist").
@@ -20,21 +21,28 @@ struct ArtistDashboardView: View {
             VYBEBackground()
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    headerCard
-                    growthChart
-                    earningsVsStreaming
-                    recognitionCard
-                    SectionHeader(title: "Top Fans by Revenue Driven")
-                    topFansByRevenue
-                    rewardTopFans
-                    SectionHeader(title: "Recent Fan Support")
-                    recentSupport
-                    SectionHeader(title: "AI Artist Twin")
-                    aiTwinCard
-                    SectionHeader(title: "City Demand / Scene Heat")
-                    cityDemand
-                    SectionHeader(title: "Growth Drivers")
-                    growthDrivers
+                    Group {
+                        headerCard
+                        collabLabModule
+                        growthChart
+                        earningsVsStreaming
+                        recognitionCard
+                    }
+                    Group {
+                        SectionHeader(title: "Top Fans by Revenue Driven")
+                        topFansByRevenue
+                        rewardTopFans
+                        SectionHeader(title: "Recent Fan Support")
+                        recentSupport
+                    }
+                    Group {
+                        SectionHeader(title: "AI Artist Twin")
+                        aiTwinCard
+                        SectionHeader(title: "City Demand / Scene Heat")
+                        cityDemand
+                        SectionHeader(title: "Growth Drivers")
+                        growthDrivers
+                    }
                 }
                 .padding(.horizontal, 20).padding(.bottom, 30)
             }
@@ -43,6 +51,59 @@ struct ArtistDashboardView: View {
         .navigationTitle("Artist Dashboard")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showLaunch) { LaunchChallengeSheet() }
+    }
+
+    // MARK: - Collab Lab module
+
+    private var collabLabModule: some View {
+        VStack(spacing: 12) {
+            NavigationLink(value: Route.collabLab) {
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "person.2.wave.2.fill").font(.system(size: 18)).foregroundStyle(.white)
+                            .frame(width: 44, height: 44).background(VYBE.holo, in: .circle)
+                        VStack(alignment: .leading, spacing: 2) {
+                            HStack(spacing: 6) {
+                                Text("Collab Lab").font(.system(size: 16, weight: .black, design: .rounded)).foregroundStyle(VYBE.text)
+                                NeonTag(text: "NEW", color: VYBE.magenta, icon: "sparkles")
+                            }
+                            Text("Find people to make music with").font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right").foregroundStyle(VYBE.textTertiary)
+                    }
+                    HStack(spacing: 10) {
+                        collabStat("\(app.myChallenges.count)", "Active", VYBE.cyan)
+                        collabStat("\(app.incomingSubmissionCount)", "Incoming", VYBE.magenta)
+                        collabStat("\(app.openChallenges.count)", "Open beats", VYBE.green)
+                        collabStat("\(app.upcomingDrops.count)", "Drops", VYBE.gold)
+                    }
+                }
+                .padding(16)
+                .background { ZStack { VYBE.card; HoloArt(seed: "collabmodule").opacity(0.12) }.clipShape(.rect(cornerRadius: 20)) }
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke(VYBE.magenta.opacity(0.3), lineWidth: 1))
+            }
+            .buttonStyle(.plain)
+
+            Button { showCollabCreate = true } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "plus").font(.system(size: 14, weight: .bold))
+                    Text("Create a Challenge").font(.system(size: 14, weight: .heavy, design: .rounded))
+                }
+                .foregroundStyle(.white).frame(maxWidth: .infinity).padding(.vertical, 12)
+                .background(VYBE.holo, in: .capsule).neonGlow(VYBE.magenta, radius: 10)
+            }
+            .buttonStyle(.plain)
+        }
+        .sheet(isPresented: $showCollabCreate) { CreateCollabChallengeView().environment(app) }
+    }
+
+    private func collabStat(_ value: String, _ label: String, _ color: Color) -> some View {
+        VStack(spacing: 3) {
+            Text(value).font(.system(size: 18, weight: .black, design: .rounded)).foregroundStyle(color)
+            Text(label).font(.system(size: 10, weight: .semibold)).foregroundStyle(VYBE.textSecondary).lineLimit(1)
+        }
+        .frame(maxWidth: .infinity).padding(.vertical, 10).background(.white.opacity(0.04), in: .rect(cornerRadius: 12))
     }
 
     // MARK: - Earnings vs streaming

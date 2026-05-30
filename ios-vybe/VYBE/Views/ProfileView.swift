@@ -23,7 +23,8 @@ struct ProfileView: View {
                 VStack(spacing: 0) {
                     header
                     VStack(spacing: 20) {
-                        if app.role == .artist || app.role == .admin { dashboardLink }
+                        // Artist tools (dashboard + Collab Lab) — always reachable in the prototype.
+                        dashboardLink
                         fanImpactSection
                         fundedArtistsSection
                         discoveredSection
@@ -82,7 +83,7 @@ struct ProfileView: View {
                     .frame(width: 44, height: 44).background(VYBE.holo, in: .circle)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Artist Dashboard").font(.system(size: 15, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
-                    Text("Fan growth, challenges, AI twin & analytics").font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+                    Text("Collab Lab · fan growth · earnings & analytics").font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary)
                 }
                 Spacer()
                 Image(systemName: "chevron.right").foregroundStyle(VYBE.textTertiary)

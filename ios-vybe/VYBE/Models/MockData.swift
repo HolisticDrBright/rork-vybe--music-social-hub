@@ -443,4 +443,174 @@ enum Mock {
         ("eye.slash.fill", "No Dark Patterns", "Every action is intentional. We never trick you into engagement or purchases."),
         ("person.2.badge.gearshape.fill", "Community-Moderated", "Real humans + smart tools keep VYBE safe. Report anything, anytime."),
     ]
+
+    // MARK: - Collab Lab
+
+    /// The artist whose dashboard the demo is presenting (the "you, the artist" side).
+    static let collabArtistId = "a1"
+
+    /// Rights/splits disclaimer surfaced across the Collab Lab.
+    static let collabRightsNotice = "Splits and rights are placeholders in this prototype. Artists should confirm ownership before release."
+
+    static let collabChallenges: [CollabChallenge] = [
+        // The current artist's own beat — used for the review → winner → drop demo.
+        CollabChallenge(
+            id: "ch1", creatorArtistId: "a1", creatorName: "NOVA REIGN",
+            title: "Best Hook on \"Midnight Signal\"", beatTitle: "Midnight Signal",
+            challengeType: .bestHook, genre: "Hyperpop", mood: "Cinematic / late-night",
+            bpm: 92, key: "A minor", city: "Los Angeles",
+            description: "Cold synth arp, big sub, space for one unforgettable topline. I want a hook that sounds like a city at 3am. Best hook gets the feature on the final song + a launch push on VYBE.",
+            lookingFor: ["Vocalist", "Topline writer"],
+            reward: "Featured artist credit + split placeholder + launch push on VYBE",
+            proposedSplit: "50/50 (placeholder)", deadlineText: "5 days left",
+            status: .reviewing, submissionCount: 37, previewSeed: "Midnight Signal",
+            visibility: .publicAll, creditNotes: "Co-write + featured credit. Confirm ownership before release."),
+
+        CollabChallenge(
+            id: "ch2", creatorArtistId: "a6", creatorName: "Sable Mirage",
+            title: "Best Hook on this Alt-R&B beat", beatTitle: "Velvet Static",
+            challengeType: .bestHook, genre: "Alt-R&B", mood: "Late-night / cinematic",
+            bpm: 92, key: "A minor", city: "Atlanta",
+            description: "Smoky chords, brushed drums, lots of air. Looking for a vocalist or topline writer who can make the chorus ache. Featured collaborator becomes part of the release.",
+            lookingFor: ["Vocalist", "Topline writer"],
+            reward: "Featured artist credit + split placeholder + launch push on VYBE",
+            proposedSplit: "60/40 (placeholder)", deadlineText: "5 days left",
+            status: .open, submissionCount: 37, previewSeed: "Velvet Static beat",
+            visibility: .publicAll, creditNotes: "Featured credit. Confirm ownership before release."),
+
+        CollabChallenge(
+            id: "ch3", creatorArtistId: "a2", creatorName: "Kairo Sol",
+            title: "Open verse on this Afro-House groove", beatTitle: "Log Drum Gospel",
+            challengeType: .openVerse, genre: "Afro-House", mood: "Groovy / hypnotic",
+            bpm: 118, key: "F minor", city: "Brooklyn",
+            description: "Rolling log drums and a late-night groove. Drop a verse or topline that rides the pocket. Open to rappers and songwriters.",
+            lookingFor: ["Rapper", "Songwriter"],
+            reward: "Split placeholder + co-release + rooftop show slot",
+            proposedSplit: "50/50 (placeholder)", deadlineText: "3 days left",
+            status: .open, submissionCount: 21, previewSeed: "Log Drum Gospel",
+            visibility: .sceneOnly, creditNotes: "Co-write credit. Confirm ownership before release."),
+
+        CollabChallenge(
+            id: "ch4", creatorArtistId: "a5", creatorName: "BASSLINE PROPHET",
+            title: "Remix this dubstep drop", beatTitle: "Subwoofer Gospel",
+            challengeType: .remixThis, genre: "Dubstep", mood: "Aggressive",
+            bpm: 150, key: "E minor", city: "Detroit",
+            description: "Take the stems and flip the drop. Heaviest, cleanest remix gets an official release + festival play.",
+            lookingFor: ["Producer", "Remixer"],
+            reward: "Official remix release + festival play + split placeholder",
+            proposedSplit: "Remix split (placeholder)", deadlineText: "1 week left",
+            status: .open, submissionCount: 54, previewSeed: "Subwoofer Gospel",
+            visibility: .publicAll, creditNotes: "Remix credit. Confirm ownership before release."),
+
+        CollabChallenge(
+            id: "ch5", creatorArtistId: "a4", creatorName: "LUNA TIDE",
+            title: "Add vocals to this dream pop loop", beatTitle: "Slow Halo",
+            challengeType: .addVocals, genre: "Dream Pop", mood: "Ethereal / hazy",
+            bpm: 80, key: "C major", city: "Portland",
+            description: "Reverb-drenched loop that needs a voice floating on top. Looking for an ethereal vocalist to finish it with me.",
+            lookingFor: ["Vocalist"],
+            reward: "Featured credit + split placeholder + tour support slot",
+            proposedSplit: "50/50 (placeholder)", deadlineText: "6 days left",
+            status: .open, submissionCount: 12, previewSeed: "Slow Halo",
+            visibility: .publicAll, creditNotes: "Featured credit. Confirm ownership before release."),
+
+        CollabChallenge(
+            id: "ch6", creatorArtistId: "a7", creatorName: "GLITCHCORE KID",
+            title: "Finish this glitch sketch", beatTitle: "error404heart",
+            challengeType: .finishSong, genre: "Hyperpop", mood: "Chaotic",
+            bpm: 160, key: "G minor", city: "Chicago",
+            description: "Half a song, all chaos. Producers + songwriters — help me turn this sketch into a real drop.",
+            lookingFor: ["Producer", "Songwriter"],
+            reward: "Co-artist credit + split placeholder",
+            proposedSplit: "Even split (placeholder)", deadlineText: "4 days left",
+            status: .open, submissionCount: 9, previewSeed: "error404heart",
+            visibility: .publicAll, creditNotes: "Co-artist credit. Confirm ownership before release."),
+
+        CollabChallenge(
+            id: "ch7", creatorArtistId: "a8", creatorName: "Marisol Vega",
+            title: "Producer wanted for reggaeton topline", beatTitle: "Calor de Verano",
+            challengeType: .producerWanted, genre: "Reggaeton", mood: "Sultry / hype",
+            bpm: 95, key: "D minor", city: "Miami",
+            description: "I have the topline and the energy — I need a producer to build the world around it. Bring the dembow.",
+            lookingFor: ["Producer"],
+            reward: "Production credit + split placeholder + music video feature",
+            proposedSplit: "Producer split (placeholder)", deadlineText: "9 days left",
+            status: .open, submissionCount: 18, previewSeed: "Calor de Verano",
+            visibility: .publicAll, creditNotes: "Production credit. Confirm ownership before release."),
+
+        // An already-completed collab that became a drop — seeds "Born on VYBE".
+        CollabChallenge(
+            id: "ch8", creatorArtistId: "a3", creatorName: "Velvet Static",
+            title: "Open verse on \"Static & Gold\"", beatTitle: "Static & Gold",
+            challengeType: .openVerse, genre: "Indie Rock", mood: "Nostalgic",
+            bpm: 104, key: "D major", city: "Austin",
+            description: "Fuzzed-out guitars looking for a second voice. Winner became a featured collaborator.",
+            lookingFor: ["Vocalist", "Songwriter"],
+            reward: "Featured credit + split placeholder",
+            proposedSplit: "50/50 (placeholder)", deadlineText: "Closed",
+            status: .convertedToDrop, submissionCount: 44, previewSeed: "Static & Gold",
+            visibility: .publicAll, creditNotes: "Featured credit. Confirm ownership before release.",
+            selectedSubmissionId: "sub-ch8-win"),
+    ]
+
+    static let collabSubmissions: [CollabSubmission] = [
+        // Submissions on the current artist's "Midnight Signal" — for the review demo.
+        CollabSubmission(id: "sub-ch1-1", challengeId: "ch1", artistId: "a4", artistName: "LUNA TIDE",
+                         submissionType: .hook, title: "\"hold the line\" hook",
+                         note: "Tried an airy falsetto hook that leans into the late-night feel — left space for your synth arp to breathe.",
+                         lyricSnippet: "hold the line / the city's calling out my name / midnight signal in my veins",
+                         previewSeed: "hook-luna-mid", reactions: 41, status: .submitted, minutesAgo: 22),
+        CollabSubmission(id: "sub-ch1-2", challengeId: "ch1", artistId: "a6", artistName: "Sable Mirage",
+                         submissionType: .hook, title: "smoky alt-r&b topline",
+                         note: "Lower register, a little ache in the chorus. Could double it with harmonies for the drop.",
+                         lyricSnippet: "signal fading, still I stay / midnight told me run away",
+                         previewSeed: "hook-sable-mid", reactions: 33, status: .shortlisted, minutesAgo: 47),
+        CollabSubmission(id: "sub-ch1-3", challengeId: "ch1", artistId: "a7", artistName: "GLITCHCORE KID",
+                         submissionType: .hook, title: "glitched-out chant hook",
+                         note: "Went chaotic — chopped vocal chant that could be the post-drop moment. Very online energy.",
+                         lyricSnippet: "mid-mid-midnight / signal in the noise",
+                         previewSeed: "hook-glitch-mid", reactions: 58, status: .submitted, minutesAgo: 63),
+        CollabSubmission(id: "sub-ch1-4", challengeId: "ch1", artistId: "", artistName: "Aria Vale",
+                         submissionType: .vocalIdea, title: "cinematic oohs + topline",
+                         note: "Layered wordless oohs for the intro then a simple, sticky chorus. Trying to keep it haunting.",
+                         lyricSnippet: "(wordless intro) → so don't let go of midnight",
+                         previewSeed: "hook-aria-mid", reactions: 27, status: .submitted, minutesAgo: 90),
+        CollabSubmission(id: "sub-ch1-5", challengeId: "ch1", artistId: "", artistName: "Kid Cassette",
+                         submissionType: .verse, title: "8-bar opener verse",
+                         note: "Wrote a quick verse to set up the hook — happy to adjust the cadence to your arp.",
+                         lyricSnippet: "neon on the dashboard, ghost in the machine / chasing a frequency nobody's seen",
+                         previewSeed: "hook-kid-mid", reactions: 19, status: .declined, minutesAgo: 140),
+
+        // A couple of public submissions on the Alt-R&B challenge (ch2).
+        CollabSubmission(id: "sub-ch2-1", challengeId: "ch2", artistId: "a4", artistName: "LUNA TIDE",
+                         submissionType: .hook, title: "breathy chorus idea",
+                         note: "Floating chorus that sits back in the mix. Could fit the cinematic brief.",
+                         lyricSnippet: "velvet static on the radio / love me slow, love me slow",
+                         previewSeed: "hook-luna-r&b", reactions: 24, status: .submitted, minutesAgo: 35),
+        CollabSubmission(id: "sub-ch2-2", challengeId: "ch2", artistId: "", artistName: "Noah Reverb",
+                         submissionType: .vocalIdea, title: "harmony stack",
+                         note: "Stacked 3-part harmony for the pre-chorus lift.",
+                         lyricSnippet: "stay in the static with me",
+                         previewSeed: "hook-noah-r&b", reactions: 15, status: .submitted, minutesAgo: 80),
+
+        // The winning submission that became the "Static & Gold" collab drop (ch8).
+        CollabSubmission(id: "sub-ch8-win", challengeId: "ch8", artistId: "a4", artistName: "LUNA TIDE",
+                         submissionType: .verse, title: "second-voice verse",
+                         note: "Added a dreamy counter-melody verse. Felt like it completed the song.",
+                         lyricSnippet: "we were static, we were gold / two voices in the cold",
+                         previewSeed: "hook-luna-static", reactions: 88, status: .selected, minutesAgo: 4320),
+    ]
+
+    static let upcomingDrops: [UpcomingDrop] = [
+        UpcomingDrop(
+            id: "ud-static", title: "Static & Gold (feat. LUNA TIDE)",
+            artistNames: ["Velvet Static", "LUNA TIDE"], originChallengeId: "ch8",
+            bornOnVYBE: true,
+            description: "Started as a Velvet Static open-verse challenge. LUNA TIDE's second voice won the feature — now it's a real release.",
+            genre: "Indie Rock × Dream Pop", earlySupporters: 1_284,
+            previewSeed: "Static & Gold drop", splitNote: "50/50 (placeholder)",
+            releaseText: "Drops in 9 days"),
+    ]
+
+    static func collabChallenge(_ id: String) -> CollabChallenge? { collabChallenges.first { $0.id == id } }
 }

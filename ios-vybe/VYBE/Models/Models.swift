@@ -319,3 +319,191 @@ struct MoodHistoryEntry: Identifiable, Hashable {
     let mode: String // "match" or "shift"
 }
 
+// MARK: - Collab Lab (artist-to-artist collaboration)
+
+/// The kind of collaboration an artist is opening up.
+enum CollabChallengeType: String, CaseIterable, Identifiable, Hashable {
+    case bestHook = "Best Hook"
+    case openVerse = "Open Verse"
+    case remixThis = "Remix This"
+    case addVocals = "Add Vocals"
+    case finishSong = "Finish This Song"
+    case producerWanted = "Producer Wanted"
+    case songwriterWanted = "Songwriter Wanted"
+    var id: String { rawValue }
+    var label: String { rawValue }
+    var icon: String {
+        switch self {
+        case .bestHook: return "music.mic"
+        case .openVerse: return "text.bubble.fill"
+        case .remixThis: return "dial.medium.fill"
+        case .addVocals: return "waveform"
+        case .finishSong: return "music.note.list"
+        case .producerWanted: return "slider.horizontal.3"
+        case .songwriterWanted: return "pencil.and.scribble"
+        }
+    }
+    /// The verb used on the submit CTA ("Submit your hook idea").
+    var submitNoun: String {
+        switch self {
+        case .bestHook: return "hook idea"
+        case .openVerse: return "verse"
+        case .remixThis: return "remix"
+        case .addVocals: return "vocal take"
+        case .finishSong: return "idea"
+        case .producerWanted: return "production"
+        case .songwriterWanted: return "topline"
+        }
+    }
+}
+
+/// Lifecycle status of a collaboration challenge.
+enum CollabStatus: String, Hashable {
+    case open = "Open"
+    case reviewing = "Reviewing"
+    case winnerPicked = "Winner Picked"
+    case convertedToDrop = "Upcoming Drop"
+    var label: String { rawValue }
+    var color: Color {
+        switch self {
+        case .open: return VYBE.green
+        case .reviewing: return VYBE.gold
+        case .winnerPicked: return VYBE.magenta
+        case .convertedToDrop: return VYBE.cyan
+        }
+    }
+    var icon: String {
+        switch self {
+        case .open: return "dot.radiowaves.left.and.right"
+        case .reviewing: return "eye.fill"
+        case .winnerPicked: return "crown.fill"
+        case .convertedToDrop: return "sparkles"
+        }
+    }
+}
+
+/// Visibility scope for a challenge.
+enum CollabVisibility: String, CaseIterable, Identifiable, Hashable {
+    case publicAll = "Public"
+    case sceneOnly = "Scene-only"
+    case inviteOnly = "Invite-only"
+    var id: String { rawValue }
+    var label: String { rawValue }
+    var icon: String {
+        switch self {
+        case .publicAll: return "globe"
+        case .sceneOnly: return "mappin.and.ellipse"
+        case .inviteOnly: return "lock.fill"
+        }
+    }
+}
+
+/// A collaborator role an artist is looking for.
+enum CollabRoleNeeded: String, CaseIterable, Identifiable, Hashable {
+    case vocalist = "Vocalist"
+    case toplineWriter = "Topline writer"
+    case rapper = "Rapper"
+    case songwriter = "Songwriter"
+    case producer = "Producer"
+    case remixer = "Remixer"
+    case instrumentalist = "Instrumentalist"
+    var id: String { rawValue }
+    var label: String { rawValue }
+}
+
+/// A submission's creative response type.
+enum SubmissionType: String, CaseIterable, Identifiable, Hashable {
+    case hook = "Hook"
+    case verse = "Verse"
+    case vocalIdea = "Vocal idea"
+    case remix = "Remix"
+    case beatFlip = "Beat flip"
+    case lyrics = "Lyrics"
+    var id: String { rawValue }
+    var label: String { rawValue }
+    var icon: String {
+        switch self {
+        case .hook: return "music.mic"
+        case .verse: return "text.alignleft"
+        case .vocalIdea: return "waveform"
+        case .remix: return "dial.medium.fill"
+        case .beatFlip: return "arrow.2.squarepath"
+        case .lyrics: return "pencil"
+        }
+    }
+}
+
+/// Lifecycle state of a single submission.
+enum SubmissionStatus: String, Hashable {
+    case submitted = "Submitted"
+    case shortlisted = "Shortlisted"
+    case selected = "Winner"
+    case declined = "Declined"
+    var label: String { rawValue }
+    var color: Color {
+        switch self {
+        case .submitted: return VYBE.textSecondary
+        case .shortlisted: return VYBE.gold
+        case .selected: return VYBE.magenta
+        case .declined: return VYBE.textTertiary
+        }
+    }
+}
+
+/// A posted collaboration challenge (beat / hook / loop / idea).
+struct CollabChallenge: Identifiable, Hashable {
+    let id: String
+    var creatorArtistId: String
+    var creatorName: String
+    var title: String
+    var beatTitle: String
+    var challengeType: CollabChallengeType
+    var genre: String
+    var mood: String
+    var bpm: Int
+    var key: String
+    var city: String
+    var description: String
+    var lookingFor: [String]          // e.g. ["Vocalist", "Topline writer"]
+    var reward: String
+    var proposedSplit: String
+    var deadlineText: String
+    var status: CollabStatus
+    var submissionCount: Int
+    var previewSeed: String
+    var visibility: CollabVisibility
+    var creditNotes: String
+    var selectedSubmissionId: String? = nil
+}
+
+/// A creative response submitted to a challenge.
+struct CollabSubmission: Identifiable, Hashable {
+    let id: String
+    var challengeId: String
+    var artistId: String
+    var artistName: String
+    var submissionType: SubmissionType
+    var title: String
+    var note: String
+    var lyricSnippet: String
+    var previewSeed: String
+    var reactions: Int
+    var status: SubmissionStatus
+    var minutesAgo: Int = 0
+}
+
+/// An upcoming release born from a Collab Lab challenge.
+struct UpcomingDrop: Identifiable, Hashable {
+    let id: String
+    var title: String
+    var artistNames: [String]
+    var originChallengeId: String?
+    var bornOnVYBE: Bool
+    var description: String
+    var genre: String
+    var earlySupporters: Int
+    var previewSeed: String
+    var splitNote: String
+    var releaseText: String
+}
+
