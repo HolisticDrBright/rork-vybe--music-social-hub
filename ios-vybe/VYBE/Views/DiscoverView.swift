@@ -60,12 +60,14 @@ struct DiscoverView: View {
                         Group {
                             vibeCheckBanner
                             beforeTheyBlowSection
+                            dropsToBreakSection
                             scenePulseSection
                             sceneSpotlightsSection
                             moodGrid
                         }
                         Group {
                             risingSection
+                            fanFundedRisingSection
                             sleevesSection
                             soundsLikeSection
                             hiddenGemsSection
@@ -220,6 +222,40 @@ struct DiscoverView: View {
                 ForEach(Mock.moods, id: \.self) { mood in
                     MoodTile(mood: mood)
                 }
+            }
+        }
+    }
+
+    /// Drop campaigns fans can help push past their goals.
+    private var dropsToBreakSection: some View {
+        let breakable = app.dropCampaigns.filter { $0.status == .live || $0.status == .upcoming }
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("🎁 Drops You Can Help Break").font(.system(size: 20, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                Spacer()
+                NavigationLink(value: Route.dropCampaigns) { Text("All drops").font(.system(size: 13, weight: .bold)).foregroundStyle(VYBE.magenta) }
+            }
+            Text("Back a drop before it crosses the line — and earn First Heard It.")
+                .font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+            ForEach(breakable.prefix(2)) { DropCampaignCard(campaign: $0) }
+        }
+    }
+
+    /// Lesser-known artists ranked by direct fan-funded earnings (vs streaming).
+    private var fanFundedRisingSection: some View {
+        let rising = Mock.artists
+            .filter { $0.popularityTier != "established" && $0.fanFundedMonthlyUSD > 0 }
+            .sorted { $0.fanFundedMonthlyUSD > $1.fanFundedMonthlyUSD }
+            .prefix(4)
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("💸 Fan-Funded Rising").font(.system(size: 20, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                Spacer()
+            }
+            Text("Underground artists earning real money from fans — not a third of a cent per stream.")
+                .font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+            ForEach(Array(rising)) { artist in
+                NavigationLink(value: Route.artist(artist.id)) { ArtistRow(artist: artist, showEarnings: true) }.buttonStyle(.plain)
             }
         }
     }

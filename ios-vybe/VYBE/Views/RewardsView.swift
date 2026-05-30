@@ -21,6 +21,7 @@ struct RewardsView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     scoreHero
                     earnRow
+                    statusBadgesSection
                     SectionHeader(title: "🏆 Active Challenges")
                     VStack(spacing: 12) { ForEach(Mock.challenges.prefix(3)) { ChallengeCard(challenge: $0) } }
                     missionsSection
@@ -40,6 +41,58 @@ struct RewardsView: View {
         .navigationTitle("Rewards")
         .vybeDestinations()
         .sheet(item: $redeemed) { reward in RedeemSheet(reward: reward) }
+    }
+
+    private var statusBadges: [RewardStatusBadge] {
+        [
+            RewardStatusBadge(id: "ed", name: "Early Discoverer", icon: "sparkle.magnifyingglass", color: VYBE.green,
+                              earned: app.cultureBadges.contains("Early Discoverer") || !app.discoveredArtists.isEmpty),
+            RewardStatusBadge(id: "fhi", name: "First Heard It", icon: "bolt.heart.fill", color: VYBE.magenta,
+                              earned: app.cultureBadges.contains("First Heard It") || !app.supportedCampaigns.isEmpty),
+            RewardStatusBadge(id: "sc", name: "Sleeve Collector", icon: "rectangle.stack.fill", color: VYBE.cyan,
+                              earned: app.sleeveBadges.contains("Sleeve Collector") || app.openedSleeves.count >= 3),
+            RewardStatusBadge(id: "vpc", name: "Video Premiere Crew", icon: "play.tv.fill", color: VYBE.purple,
+                              earned: app.sleeveBadges.contains("Video Premiere Crew") || app.cultureBadges.contains("Premiere Crew")),
+            RewardStatusBadge(id: "cs", name: "Collab Scout", icon: "person.2.wave.2.fill", color: VYBE.gold,
+                              earned: app.collabBadges.contains("Collab Scout") || app.cultureBadges.contains("Crew Member") || !app.joinedCrews.isEmpty),
+        ]
+    }
+
+    private var statusBadgesSection: some View {
+        let earnedCount = statusBadges.filter(\.earned).count
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("🎖 Status Badges").font(.system(size: 20, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                Spacer()
+                Text("\(earnedCount)/\(statusBadges.count) earned").font(.system(size: 12, weight: .bold)).foregroundStyle(VYBE.textSecondary)
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 14) {
+                    ForEach(statusBadges) { badge in badgeMedallion(badge) }
+                }
+            }
+            Text("Earn badges by supporting early, opening sleeves, catching premieres, and joining crews.")
+                .font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textTertiary)
+        }
+    }
+
+    private func badgeMedallion(_ b: RewardStatusBadge) -> some View {
+        VStack(spacing: 8) {
+            ZStack {
+                Circle()
+                    .fill(b.earned ? AnyShapeStyle(LinearGradient(colors: [b.color, b.color.opacity(0.6)], startPoint: .topLeading, endPoint: .bottomTrailing)) : AnyShapeStyle(Color.white.opacity(0.06)))
+                    .frame(width: 64, height: 64)
+                    .neonGlow(b.earned ? b.color : .clear, radius: 10)
+                Image(systemName: b.icon).font(.system(size: 24, weight: .bold)).foregroundStyle(b.earned ? .white : VYBE.textTertiary)
+                if !b.earned {
+                    Image(systemName: "lock.fill").font(.system(size: 11)).foregroundStyle(VYBE.textTertiary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing).padding(6)
+                }
+            }
+            Text(b.name).font(.system(size: 10, weight: .bold)).foregroundStyle(b.earned ? VYBE.text : VYBE.textTertiary)
+                .multilineTextAlignment(.center).frame(width: 76).lineLimit(2)
+        }
+        .opacity(b.earned ? 1 : 0.6)
     }
 
     private var missionsSection: some View {
@@ -202,4 +255,13 @@ struct RedeemSheet: View {
         .background(VYBE.bgElevated)
         .presentationDetents([.medium])
     }
+}
+
+/// A live status badge surfaced on the Rewards screen.
+struct RewardStatusBadge: Identifiable {
+    let id: String
+    let name: String
+    let icon: String
+    let color: Color
+    let earned: Bool
 }
