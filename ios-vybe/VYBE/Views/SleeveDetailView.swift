@@ -9,14 +9,26 @@
 
 import SwiftUI
 
+/// The one sheet a sleeve screen can present (avoids stacked-sheet conflicts).
+enum SleeveSheet: Identifiable {
+    case video(MusicVideo)
+    case lyricShare
+    case receipt(SupportReceipt)
+    var id: String {
+        switch self {
+        case .video(let v): return "video-\(v.id)"
+        case .lyricShare: return "lyricShare"
+        case .receipt(let r): return "receipt-\(r.id)"
+        }
+    }
+}
+
 struct SleeveDetailView: View {
     @Environment(AppState.self) private var app
     let sleeveId: String
 
     @State private var page = 0
-    @State private var playingVideo: MusicVideo? = nil
-    @State private var showLyricShare = false
-    @State private var receipt: SupportReceipt? = nil
+    @State private var activeSheet: SleeveSheet? = nil
 
     private var sleeve: SongSleeve? { app.sleeve(sleeveId) }
 
@@ -44,19 +56,20 @@ struct SleeveDetailView: View {
         }
         .navigationTitle("Sleeve")
         .navigationBarTitleDisplayMode(.inline)
-        // NOTE: three independent sheets — valid on iOS 16+/18 (separate bindings,
-        // mutually exclusive). Consolidate into one enum-driven `.sheet(item:)` if a
-        // sheet ever fails to present on an older OS.
-        .sheet(item: $playingVideo) { VideoPlayerSheet(video: $0).environment(app) }
-        .sheet(isPresented: $showLyricShare) {
-            if let s = sleeve { LyricShareSheet(sleeve: s, lines: shareLines(s)).environment(app) }
-        }
-        .sheet(item: $receipt) { r in
-            NavigationStack {
-                SupportReceiptView(receipt: r)
-                    .toolbar { ToolbarItem(placement: .topBarLeading) { Button("Done") { receipt = nil }.foregroundStyle(VYBE.text) } }
+        // Single enum-driven sheet (avoids stacked-sheet presentation conflicts).
+        .sheet(item: $activeSheet) { sheet in
+            switch sheet {
+            case .video(let v):
+                VideoPlayerSheet(video: v).environment(app)
+            case .lyricShare:
+                if let s = sleeve { LyricShareSheet(sleeve: s, lines: shareLines(s)).environment(app) }
+            case .receipt(let r):
+                NavigationStack {
+                    SupportReceiptView(receipt: r)
+                        .toolbar { ToolbarItem(placement: .topBarLeading) { Button("Done") { activeSheet = nil }.foregroundStyle(VYBE.text) } }
+                }
+                .environment(app)
             }
-            .environment(app)
         }
         .vybeDestinations()
         .onAppear { app.openSleeve(sleeveId) }
@@ -152,7 +165,7 @@ struct SleeveDetailView: View {
                     .padding(14)
                     .background(.white.opacity(0.04), in: .rect(cornerRadius: 14))
                 }
-                Button { showLyricShare = true } label: {
+                Button { activeSheet = .lyricShare } label: {
                     Label("Share a lyric card", systemImage: "square.and.arrow.up.fill")
                         .font(.system(size: 14, weight: .heavy, design: .rounded)).foregroundStyle(.white)
                         .frame(maxWidth: .infinity).padding(.vertical, 13)
@@ -212,7 +225,7 @@ struct SleeveDetailView: View {
         pageScaffold(s, title: "Music Video", icon: "play.tv.fill") {
             VStack(alignment: .leading, spacing: 14) {
                 if let v = s.videoId.flatMap({ Mock.video($0) }) {
-                    VideoCard(video: v, width: UIScreen.main.bounds.width - 40) { playingVideo = v }
+                    VideoCard(video: v, width: UIScreen.main.bounds.width - 40) { activeSheet = .video(v) }
                     NavigationLink(value: Route.vybeTV) {
                         Label("More on VYBE TV", systemImage: "tv.fill")
                             .font(.system(size: 13, weight: .bold)).foregroundStyle(s.era.accents[0])
@@ -256,7 +269,7 @@ struct SleeveDetailView: View {
                 Text("Supporting a drop from its sleeve drives real earnings to the artist and unlocks Sleeve Collector progress.")
                     .font(.system(size: 13, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineSpacing(3)
 
-                Button { receipt = app.supportDrop(artist: artist, title: s.title) } label: {
+                Button { activeSheet = .receipt(app.supportDrop(artist: artist, title: s.title)) } label: {
                     Label("Support this drop · $8", systemImage: "bolt.fill")
                         .font(.system(size: 16, weight: .heavy, design: .rounded)).foregroundStyle(.white)
                         .frame(maxWidth: .infinity).padding(.vertical, 15)

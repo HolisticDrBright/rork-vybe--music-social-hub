@@ -8,15 +8,27 @@
 
 import SwiftUI
 
+/// The one sheet a song-detail screen can present (avoids stacked-sheet conflicts).
+enum SongDetailSheet: Identifiable {
+    case share
+    case video(MusicVideo)
+    case receipt(SupportReceipt)
+    var id: String {
+        switch self {
+        case .share: return "share"
+        case .video(let v): return "video-\(v.id)"
+        case .receipt(let r): return "receipt-\(r.id)"
+        }
+    }
+}
+
 struct SongDetailView: View {
     @Environment(AppState.self) private var app
     let songId: String
     @State private var playing = false
     @State private var progress: Double = 0.32
-    @State private var showShareSheet = false
     @State private var rotate = false
-    @State private var receipt: SupportReceipt? = nil
-    @State private var playingVideo: MusicVideo? = nil
+    @State private var activeSheet: SongDetailSheet? = nil
 
     private var song: Song { Mock.allSongs.first { $0.id == songId } ?? Mock.songs[0] }
     private var artist: Artist { Mock.artist(song.artistId) }
@@ -50,22 +62,24 @@ struct SongDetailView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
-        // NOTE: three independent sheets. Fine on iOS 16+/18 (each presents from its
-        // own binding and they're mutually exclusive in practice). If a sheet ever
-        // fails to present on an older OS, consolidate into one enum-driven
-        // `.sheet(item:)` (e.g. `enum ActiveSheet { case share, video(MusicVideo), receipt(SupportReceipt) }`).
-        .sheet(isPresented: $showShareSheet) { ShareSheet(song: song) }
-        .sheet(item: $playingVideo) { VideoPlayerSheet(video: $0).environment(app) }
-        .sheet(item: $receipt) { r in
-            NavigationStack {
-                SupportReceiptView(receipt: r)
-                    .toolbar {
-                        ToolbarItem(placement: .topBarLeading) {
-                            Button("Done") { receipt = nil }.foregroundStyle(VYBE.text)
+        // Single enum-driven sheet (avoids stacked-sheet presentation conflicts).
+        .sheet(item: $activeSheet) { sheet in
+            switch sheet {
+            case .share:
+                ShareSheet(song: song).environment(app)
+            case .video(let v):
+                VideoPlayerSheet(video: v).environment(app)
+            case .receipt(let r):
+                NavigationStack {
+                    SupportReceiptView(receipt: r)
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                Button("Done") { activeSheet = nil }.foregroundStyle(VYBE.text)
+                            }
                         }
-                    }
+                }
+                .environment(app)
             }
-            .environment(app)
         }
         .vybeDestinations()
         .onChange(of: playing) { _, p in
@@ -136,13 +150,13 @@ struct SongDetailView: View {
                 app.toggleSave(songId)
             }
             iconButton("square.and.arrow.up.fill", "Share", VYBE.magenta) {
-                showShareSheet = true
+                activeSheet = .share
             }
             iconButton("heart.fill", "Tip $5", VYBE.gold) {
-                receipt = app.recordSupport(.tip(5), artist: artist, songTitle: song.title)
+                activeSheet = .receipt(app.recordSupport(.tip(5), artist: artist, songTitle: song.title))
             }
             iconButton("video.badge.plus", "Boost", VYBE.cyan) {
-                receipt = app.recordSupport(.boost, artist: artist, songTitle: song.title)
+                activeSheet = .receipt(app.recordSupport(.boost, artist: artist, songTitle: song.title))
             }
         }
     }
@@ -175,7 +189,7 @@ struct SongDetailView: View {
                 }
                 SleevePreviewCard(sleeve: sleeve, hasVideo: sleeve.videoId != nil)
                 if let v = sleeve.videoId.flatMap({ Mock.video($0) }) {
-                    Button { playingVideo = v } label: {
+                    Button { activeSheet = .video(v) } label: {
                         HStack(spacing: 12) {
                             ZStack {
                                 HoloArt(seed: v.previewSeed, corner: 12).frame(width: 60, height: 44)
