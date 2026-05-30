@@ -444,7 +444,7 @@ enum Mock {
         ("hand.thumbsup.fill", "No Forced Ads", "Premium tiers never see ads. Even free-tier ads are music-related and non-intrusive."),
         ("shuffle", "Honest Shuffle", "When you hit shuffle, it's truly random. No payola, no algorithmic bias."),
         ("lock.shield.fill", "Your Data Is Yours", "We don't sell your listening data. Period. Your taste profile stays private."),
-        ("heart.text.square.fill", "Artist-First Economics", "Artists keep 90% of fan support. Compare: Spotify pays ~$0.004 per stream."),
+        ("heart.text.square.fill", "Artist-First Economics", "Artists keep 90% of fan support — VYBE takes a 10% platform fee (plus card processing). Compare: Spotify pays ~$0.004 per stream."),
         ("eye.slash.fill", "No Dark Patterns", "Every action is intentional. We never trick you into engagement or purchases."),
         ("person.2.badge.gearshape.fill", "Community-Moderated", "Real humans + smart tools keep VYBE safe. Report anything, anytime."),
     ]

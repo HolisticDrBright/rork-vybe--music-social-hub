@@ -323,7 +323,7 @@ struct ArtistProfileView: View {
             NavigationLink(value: Route.earnings(artistId)) {
                 Text("Full earnings transparency →").font(.system(size: 14, weight: .bold)).foregroundStyle(VYBE.green).frame(maxWidth: .infinity).padding(.vertical, 8)
             }
-            Text("Artist keeps \(e.artistKeepsPercent)% of every dollar from fan support. Compare: Spotify pays ~$0.004 per stream.")
+            Text("Artist keeps \(e.artistKeepsPercent)% of every dollar of fan support — VYBE's fee is 10% (plus card processing). Compare: Spotify pays ~$0.004 per stream.")
                 .font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineSpacing(3)
         }
     }
