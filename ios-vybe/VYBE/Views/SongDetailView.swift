@@ -15,8 +15,9 @@ struct SongDetailView: View {
     @State private var progress: Double = 0.32
     @State private var showShareSheet = false
     @State private var rotate = false
+    @State private var receipt: SupportReceipt? = nil
 
-    private var song: Song { Mock.songs.first { $0.id == songId } ?? Mock.songs[0] }
+    private var song: Song { Mock.allSongs.first { $0.id == songId } ?? Mock.songs[0] }
     private var artist: Artist { Mock.artist(song.artistId) }
     private var saved: Bool { app.savedSongs.contains(songId) }
     private var earnings: ArtistEarnings { Mock.earnings(for: song.artistId) }
@@ -48,6 +49,17 @@ struct SongDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .sheet(isPresented: $showShareSheet) { ShareSheet(song: song) }
+        .sheet(item: $receipt) { r in
+            NavigationStack {
+                SupportReceiptView(receipt: r)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button("Done") { receipt = nil }.foregroundStyle(VYBE.text)
+                        }
+                    }
+            }
+            .environment(app)
+        }
         .vybeDestinations()
         .onChange(of: playing) { _, p in
             withAnimation(.linear(duration: 6).repeatForever(autoreverses: false)) {
@@ -120,12 +132,10 @@ struct SongDetailView: View {
                 showShareSheet = true
             }
             iconButton("heart.fill", "Tip $5", VYBE.gold) {
-                app.tipArtist(song.artistId, amount: 5)
-                app.hapticSuccess()
+                receipt = app.recordSupport(.tip(5), artist: artist, songTitle: song.title)
             }
             iconButton("video.badge.plus", "Boost", VYBE.cyan) {
-                app.boost(song.artistId)
-                app.hapticSuccess()
+                receipt = app.recordSupport(.boost, artist: artist, songTitle: song.title)
             }
         }
     }

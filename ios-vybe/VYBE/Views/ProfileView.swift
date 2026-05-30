@@ -24,6 +24,7 @@ struct ProfileView: View {
                     header
                     VStack(spacing: 20) {
                         if app.role == .artist || app.role == .admin { dashboardLink }
+                        fanImpactSection
                         fundedArtistsSection
                         discoveredSection
                         personality
@@ -139,6 +140,92 @@ struct ProfileView: View {
                 .vybeCard(corner: 14)
             }
         }
+    }
+
+    // MARK: - Fan Impact
+
+    private var fanImpactSection: some View {
+        let impact = FanImpact.build(app)
+        return VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(title: "Your Impact")
+            HStack(spacing: 10) {
+                impactTile("$\(impact.earningsDriven.compact)", "Drove to artists", VYBE.green, "dollarsign.circle.fill")
+                impactTile("\(impact.discoveredCount)", "Discovered", VYBE.cyan, "sparkle.magnifyingglass")
+                impactTile("\(impact.artistsFunded)", "Funded", VYBE.magenta, "heart.fill")
+            }
+
+            // Scene influence
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Label("Your Scene Influence", systemImage: "antenna.radiowaves.left.and.right")
+                        .font(.system(size: 13, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                    Spacer()
+                    Text(impact.sceneInfluenceLabel)
+                        .font(.system(size: 12, weight: .bold)).foregroundStyle(VYBE.gold)
+                }
+                NeonProgressBar(progress: impact.sceneInfluencePercent, gradient: VYBE.goldGrad)
+            }
+            .padding(14).vybeCard(corner: 16)
+
+            // Early Discoverer wins
+            if !impact.earlyWins.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Early Discoverer Wins")
+                        .font(.system(size: 13, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.textSecondary)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 10) {
+                            ForEach(impact.earlyWins) { artist in
+                                NavigationLink(value: Route.artist(artist.id)) {
+                                    VStack(spacing: 6) {
+                                        AvatarView(seed: artist.name, size: 52)
+                                            .overlay(alignment: .bottomTrailing) {
+                                                Image(systemName: "rosette").font(.system(size: 12))
+                                                    .foregroundStyle(VYBE.gold).padding(3)
+                                                    .background(VYBE.bg, in: .circle)
+                                            }
+                                        Text(artist.name).font(.system(size: 10, weight: .bold))
+                                            .foregroundStyle(VYBE.text).lineLimit(1).frame(width: 64)
+                                        Text(artist.isUndergroundRising ? "📈 rising" : "early")
+                                            .font(.system(size: 9, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.green)
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Fan rank by artist
+            if !impact.rankByArtist.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Your Rank by Artist")
+                        .font(.system(size: 13, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.textSecondary)
+                    ForEach(impact.rankByArtist, id: \.artist.id) { entry in
+                        NavigationLink(value: Route.leaderboard(entry.artist.id)) {
+                            HStack(spacing: 12) {
+                                AvatarView(seed: entry.artist.name, size: 38)
+                                Text(entry.artist.name).font(.system(size: 14, weight: .bold)).foregroundStyle(VYBE.text)
+                                Spacer()
+                                Text("#\(entry.rank)").font(.system(size: 15, weight: .black, design: .rounded)).foregroundStyle(VYBE.gold)
+                                Image(systemName: "crown.fill").font(.system(size: 11)).foregroundStyle(VYBE.gold)
+                            }
+                            .padding(12).vybeCard(corner: 14)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+    }
+
+    private func impactTile(_ value: String, _ label: String, _ color: Color, _ icon: String) -> some View {
+        VStack(spacing: 5) {
+            Image(systemName: icon).font(.system(size: 14, weight: .bold)).foregroundStyle(color)
+            Text(value).font(.system(size: 17, weight: .black, design: .rounded)).foregroundStyle(VYBE.text).lineLimit(1).minimumScaleFactor(0.7)
+            Text(label).font(.system(size: 10, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineLimit(1)
+        }
+        .frame(maxWidth: .infinity).padding(.vertical, 14).vybeCard(corner: 16)
     }
 
     // MARK: - Discovered by You (#17)

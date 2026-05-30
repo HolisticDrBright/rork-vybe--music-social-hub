@@ -240,7 +240,7 @@ struct VYBELoopView: View {
                             .scaleEffect(payoffAnimation ? 1.08 : 1)
                             .animation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: payoffAnimation)
                         VStack(spacing: 0) {
-                            Text("+750")
+                            Text("+\(app.loopReceipt?.vybeScoreEarned ?? 420)")
                                 .font(.system(size: 38, weight: .black, design: .rounded))
                                 .foregroundStyle(VYBE.text)
                                 .contentTransition(.numericText())
@@ -256,7 +256,7 @@ struct VYBELoopView: View {
                     HStack(spacing: 8) {
                         Image(systemName: "chart.line.uptrend.xyaxis")
                             .foregroundStyle(VYBE.green)
-                        Text("LUNA TIDE earned $26.40")
+                        Text("\(app.loopArtist.name) earned \(String(format: "$%.2f", app.loopReceipt?.artistEarnedUSD ?? 3.80))")
                             .font(.system(size: 16, weight: .heavy, design: .rounded))
                             .foregroundStyle(VYBE.green)
                     }
@@ -266,7 +266,7 @@ struct VYBELoopView: View {
                     .overlay(Capsule().stroke(VYBE.green.opacity(0.3), lineWidth: 1))
 
                     // Comparison
-                    Text("That's **66x** what streaming would have paid.")
+                    Text("That's **\(app.loopReceipt?.multiplier ?? 95)x** what streaming would have paid.")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(VYBE.text)
                         .multilineTextAlignment(.center)
@@ -296,7 +296,7 @@ struct VYBELoopView: View {
                     HStack(spacing: 8) {
                         Image(systemName: "arrow.up.circle.fill")
                             .foregroundStyle(VYBE.cyan)
-                        Text("You moved up 12 spots on the Portland leaderboard")
+                        Text(app.loopReceipt?.rankUpdated ?? "You climbed \(app.loopArtist.name)'s fan board")
                             .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(VYBE.cyan)
                     }
@@ -384,7 +384,7 @@ struct VYBELoopView: View {
                     app.advanceLoop()
                 }
             case 1:
-                PrimaryButton(title: "Support her now · +750 pts", icon: "bolt.fill") {
+                PrimaryButton(title: "Support her now", icon: "bolt.fill") {
                     app.loopSupportArtist()
                     app.advanceLoop()
                     app.hapticSuccess()

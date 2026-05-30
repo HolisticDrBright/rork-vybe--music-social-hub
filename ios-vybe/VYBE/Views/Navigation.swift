@@ -23,6 +23,7 @@ enum Route: Hashable {
     case vybeLoop               // Guided VYBE Loop demo
     case vibeCheck              // Vibe Check emotion-based discovery
     case hiddenGems             // "Unknowns Like Your Favorites" discovery engine
+    case soundsLike(String)     // Hidden Gems pre-seeded with a specific anchor
 }
 
 extension View {
@@ -45,6 +46,7 @@ extension View {
             case .vybeLoop: VYBELoopView()
             case .vibeCheck: VibeCheckView()
             case .hiddenGems: HiddenGemsView()
+            case .soundsLike(let anchor): HiddenGemsView(seedAnchor: anchor)
             }
         }
     }

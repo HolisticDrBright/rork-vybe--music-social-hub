@@ -9,6 +9,11 @@ struct ArtistDashboardView: View {
     @Environment(AppState.self) private var app
     @State private var aiTwinEnabled = true
     @State private var showLaunch = false
+    @State private var rewardedFan: String? = nil
+
+    /// The artist whose dashboard this is (the demo "you, the artist").
+    private let dashboardArtistId = "a1"
+    private var impact: ArtistImpact { ArtistImpact.build(artistId: dashboardArtistId, app: app) }
 
     var body: some View {
         ZStack {
@@ -17,18 +22,16 @@ struct ArtistDashboardView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     headerCard
                     growthChart
+                    earningsVsStreaming
+                    recognitionCard
+                    SectionHeader(title: "Top Fans by Revenue Driven")
+                    topFansByRevenue
+                    rewardTopFans
+                    SectionHeader(title: "Recent Fan Support")
+                    recentSupport
                     SectionHeader(title: "AI Artist Twin")
                     aiTwinCard
-                    SectionHeader(title: "Top Fans")
-                    VStack(spacing: 10) {
-                        ForEach(Array(Mock.leaderboard.prefix(4).enumerated()), id: \.element.id) { idx, fan in
-                            HStack {
-                                LeaderRow(rank: idx + 1, fan: fan)
-                            }
-                        }
-                    }
-                    rewardTopFans
-                    SectionHeader(title: "City Demand")
+                    SectionHeader(title: "City Demand / Scene Heat")
                     cityDemand
                     SectionHeader(title: "Growth Drivers")
                     growthDrivers
@@ -40,6 +43,112 @@ struct ArtistDashboardView: View {
         .navigationTitle("Artist Dashboard")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showLaunch) { LaunchChallengeSheet() }
+    }
+
+    // MARK: - Earnings vs streaming
+
+    private var earningsVsStreaming: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("$\(impact.earnings.total.grouped)")
+                    .font(.system(size: 26, weight: .black, design: .rounded)).foregroundStyle(VYBE.green)
+                Text("fan-funded this month").font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+            }
+            Spacer()
+            VStack(alignment: .trailing, spacing: 2) {
+                Text("$\(impact.earnings.streamingEquivalent.grouped)")
+                    .font(.system(size: 18, weight: .black, design: .rounded)).foregroundStyle(VYBE.textSecondary)
+                Text("on streaming").font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textTertiary)
+            }
+            Divider().frame(height: 40).overlay(VYBE.stroke)
+            VStack(spacing: 2) {
+                Text("\(impact.multiplier)x").font(.system(size: 22, weight: .black, design: .rounded)).foregroundStyle(VYBE.magenta)
+                Text("more").font(.system(size: 10, weight: .semibold)).foregroundStyle(VYBE.textSecondary)
+            }
+        }
+        .padding(16).vybeCard(corner: 20)
+    }
+
+    // MARK: - Recognition moment
+
+    private var recognitionCard: some View {
+        let fan = impact.risingTopFan
+        return HStack(spacing: 12) {
+            AvatarView(seed: fan.fan.avatarSeed, size: 46)
+                .overlay(alignment: .bottomTrailing) {
+                    Image(systemName: "arrow.up.right.circle.fill").font(.system(size: 14))
+                        .foregroundStyle(VYBE.green).background(VYBE.bg, in: .circle)
+                }
+            VStack(alignment: .leading, spacing: 2) {
+                Text("@\(fan.fan.name) is a rising top fan")
+                    .font(.system(size: 14, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                Text("Drove $\(fan.revenueDriven) · \(fan.streamsDriven.compact) streams")
+                    .font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+            }
+            Spacer()
+            Button { rewardedFan = fan.fan.name; app.hapticSuccess() } label: {
+                Text(rewardedFan == fan.fan.name ? "Rewarded ✓" : "Recognize")
+                    .font(.system(size: 12, weight: .heavy, design: .rounded))
+                    .foregroundStyle(rewardedFan == fan.fan.name ? VYBE.green : .white)
+                    .padding(.horizontal, 12).padding(.vertical, 8)
+                    .background {
+                        if rewardedFan == fan.fan.name { Capsule().fill(VYBE.green.opacity(0.15)) }
+                        else { Capsule().fill(VYBE.holo) }
+                    }
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(14)
+        .background { ZStack { VYBE.card; HoloArt(seed: "recognize").opacity(0.1) }.clipShape(.rect(cornerRadius: 18)) }
+        .overlay(RoundedRectangle(cornerRadius: 18).stroke(VYBE.green.opacity(0.3), lineWidth: 1))
+    }
+
+    // MARK: - Top fans by revenue
+
+    private var topFansByRevenue: some View {
+        VStack(spacing: 10) {
+            ForEach(Array(impact.topFans.enumerated()), id: \.element.id) { idx, tf in
+                HStack(spacing: 12) {
+                    Text("\(idx + 1)").font(.system(size: 14, weight: .black, design: .rounded))
+                        .foregroundStyle(idx == 0 ? VYBE.gold : VYBE.textSecondary).frame(width: 20)
+                    AvatarView(seed: tf.fan.avatarSeed, size: 40)
+                    VStack(alignment: .leading, spacing: 1) {
+                        HStack(spacing: 5) {
+                            Text("@\(tf.fan.name)").font(.system(size: 14, weight: .bold)).foregroundStyle(VYBE.text)
+                            if tf.isYou { NeonTag(text: "YOU", color: VYBE.magenta) }
+                        }
+                        Text("\(tf.streamsDriven.compact) streams driven · \(tf.fan.city)")
+                            .font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 0) {
+                        Text("$\(tf.revenueDriven)").font(.system(size: 15, weight: .black, design: .rounded)).foregroundStyle(VYBE.green)
+                        Text("revenue").font(.system(size: 9, weight: .semibold)).foregroundStyle(VYBE.textTertiary)
+                    }
+                }
+                .padding(12).vybeCard(corner: 14)
+            }
+        }
+    }
+
+    // MARK: - Recent support feed
+
+    private var recentSupport: some View {
+        VStack(spacing: 8) {
+            ForEach(impact.recentEvents) { ev in
+                HStack(spacing: 12) {
+                    AvatarView(seed: ev.fanName, size: 34)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("@\(ev.fanName) · \(ev.verb)")
+                            .font(.system(size: 13, weight: .semibold)).foregroundStyle(VYBE.text).lineLimit(1)
+                        Text("\(ev.minutesAgo)m ago").font(.system(size: 10, weight: .medium)).foregroundStyle(VYBE.textTertiary)
+                    }
+                    Spacer()
+                    Text("+\(ev.dollarsLabel)").font(.system(size: 13, weight: .black, design: .rounded)).foregroundStyle(VYBE.green)
+                }
+                .padding(.vertical, 8).padding(.horizontal, 12).vybeCard(corner: 12)
+            }
+        }
     }
 
     private var headerCard: some View {
@@ -164,10 +273,9 @@ struct ArtistDashboardView: View {
 
     private var cityDemand: some View {
         VStack(spacing: 10) {
-            cityBar("Los Angeles", 1.0, "184K fans")
-            cityBar("New York", 0.78, "142K fans")
-            cityBar("Miami", 0.62, "112K fans")
-            cityBar("Chicago", 0.45, "81K fans")
+            ForEach(impact.cityHeat) { heat in
+                cityBar(heat.city, heat.value, heat.fans)
+            }
         }
         .padding(16).vybeCard(corner: 20)
     }

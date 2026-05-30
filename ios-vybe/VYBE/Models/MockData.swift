@@ -87,11 +87,14 @@ enum Mock {
     /// All artists in the app: hand-authored heroes + 90+ procedurally-generated
     /// underground acts (see DiscoveryEngine.swift) so every list feels full and the
     /// "Hidden Gems" engine has a deep, lesser-known pool to surface.
-    static let artists: [Artist] = featuredArtists + Discovery.generatedArtists
+    /// The full artist pool — sourced from the canonical JSON when present,
+    /// otherwise the built-in hero + generated catalog (see VYBEDataStore).
+    static let artists: [Artist] = VYBEDataStore.shared.artists
 
     static func artist(_ id: String) -> Artist { artists.first { $0.id == id } ?? artists[0] }
 
-    static let songs: [Song] = [
+    /// Hand-authored "hero" songs used by curated demo rows (trending / viral / search).
+    static let featuredSongs: [Song] = [
         Song(id: "s1", title: "Neon Bloodstream", artistId: "a1", artistName: "NOVA REIGN", genre: "Hyperpop", mood: "Euphoric", energy: 94, durationSec: 198, plays: 12_400_000, isViral: true, releasedDaysAgo: 4),
         Song(id: "s2", title: "Midnight Caracas", artistId: "a8", artistName: "Marisol Vega", genre: "Reggaeton", mood: "Sultry", energy: 82, durationSec: 211, plays: 28_900_000, isViral: true, releasedDaysAgo: 12),
         Song(id: "s3", title: "Gravity Loves You", artistId: "a4", artistName: "LUNA TIDE", genre: "Dream Pop", mood: "Dreamy", energy: 38, durationSec: 247, plays: 1_220_000, isViral: false, releasedDaysAgo: 2),
@@ -104,9 +107,14 @@ enum Mock {
         Song(id: "s10", title: "Lunar Echoes", artistId: "a4", artistName: "LUNA TIDE", genre: "Ambient", mood: "Calm", energy: 24, durationSec: 312, plays: 880_000, isViral: false, releasedDaysAgo: 15),
     ]
 
+    /// Alias kept for curated demo rows that intentionally use the hero set.
+    static let songs: [Song] = featuredSongs
+
+    /// Every song across the whole catalog (canonical JSON or built-in).
+    static let allSongs: [Song] = VYBEDataStore.shared.songs
+
     static func songs(for artistId: String) -> [Song] {
-        let hero = songs.filter { $0.artistId == artistId }
-        return hero.isEmpty ? Discovery.generatedSongs.filter { $0.artistId == artistId } : hero
+        allSongs.filter { $0.artistId == artistId }
     }
 
     static let moods = ["Euphoric", "Dreamy", "Aggressive", "Groovy", "Intimate", "Nostalgic", "Chaotic", "Calm"]
@@ -230,7 +238,7 @@ enum Mock {
 
     /// Famous reference artists used purely as taste anchors in the discovery engine.
     /// These are reference points only — never navigable profiles.
-    static let anchors: [AnchorArtist] = Discovery.anchors
+    static let anchors: [AnchorArtist] = VYBEDataStore.shared.anchors
 
     /// Resolve a typed/selected anchor name (or genre) into a similarity vector.
     static func anchorVector(named raw: String) -> SonicVector? {
@@ -262,25 +270,6 @@ enum Mock {
         FundedArtist(id: "fa3", artistId: "a3", artistName: "Velvet Static", totalContributed: 140, streamsDriven: 6_200, rank: 28, supportActions: ["Shared 12x", "Playlist add", "Attended Austin show"], artistHandle: "@velvetstatic", artistGenre: "Indie Rock"),
         FundedArtist(id: "fa4", artistId: "a7", artistName: "GLITCHCORE KID", totalContributed: 85, streamsDriven: 3_100, rank: 8, supportActions: ["Early discoverer", "Shared 18x", "Tip $5"], artistHandle: "@glitchcorekid", artistGenre: "Hyperpop"),
     ]
-
-    // MARK: - Support Receipts
-
-    static func generateReceipt(for artist: Artist, action: String, score: Int, streams: Int) -> SupportReceipt {
-        let streamingPay = Int(Double(streams) * 0.004)
-        let multiple = max(1, Int(Double(score) / Double(max(streamingPay, 1))))
-        return SupportReceipt(
-            id: UUID().uuidString,
-            artistName: artist.name,
-            artistHandle: artist.handle,
-            amountDriven: score,
-            action: action,
-            vybeScoreEarned: score,
-            rankUpdated: "Top 50 fan in \(artist.city)",
-            streamingComparison: "\(multiple)x what streaming would've paid",
-            timestamp: Date(),
-            receiptSeed: "receipt-\(artist.id)-\(Int(Date().timeIntervalSince1970))"
-        )
-    }
 
     // MARK: - Report Categories
 

@@ -119,6 +119,8 @@ struct SettingsView: View {
             SectionHeader(title: "About").padding(.horizontal, 4).padding(.bottom, 8)
             settingsRow("info.circle.fill", "Version", "1.0.0 (MVP)", VYBE.textSecondary)
             settingsDivider
+            settingsRow("externaldrive.fill", "Data source", VYBEDataStore.shared.source, VYBE.cyan)
+            settingsDivider
             settingsRow("heart.fill", "Made for music fans", "San Francisco, CA", VYBE.magenta)
 
             HStack(spacing: 10) {

@@ -12,6 +12,8 @@ import SwiftUI
 
 struct HiddenGemsView: View {
     @Environment(AppState.self) private var app
+    /// When set (via "Sounds Like…"), the engine seeds with this anchor instead of the fan's follows.
+    var seedAnchor: String? = nil
     @State private var activeAnchors: [String] = []
     @State private var query: String = ""
     @State private var celebration: SupportReceipt? = nil
@@ -61,9 +63,13 @@ struct HiddenGemsView: View {
         .onAppear {
             guard !didInit else { return }
             didInit = true
-            activeAnchors = Discovery
-                .defaultFavorites(followed: app.followedArtists, taste: app.taste)
-                .map(\.displayName)
+            if let seed = seedAnchor, Mock.anchorVector(named: seed) != nil {
+                activeAnchors = [seed]
+            } else {
+                activeAnchors = Discovery
+                    .defaultFavorites(followed: app.followedArtists, taste: app.taste)
+                    .map(\.displayName)
+            }
         }
         .sheet(item: $celebration) { receipt in
             NavigationStack {

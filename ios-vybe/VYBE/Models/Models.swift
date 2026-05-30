@@ -259,6 +259,15 @@ struct SupportReceipt: Identifiable, Hashable {
     var streamingComparison: String // e.g. "17x what streaming would've paid"
     var timestamp: Date
     var receiptSeed: String
+
+    // Precise economics for the investor-demo "money moment".
+    var artistEarnedUSD: Double = 0     // dollars this single action put in the artist's pocket
+    var streamingEquivUSD: Double = 0   // what streaming would have paid for the same activity
+    var multiplier: Int = 0             // artistEarnedUSD / streamingEquivUSD
+    var fanRank: Int = 0                // the fan's new rank on this artist's board
+    var badgeProgress: String? = nil    // e.g. "Early Discoverer unlocked!"
+    /// Headline copy, e.g. "You helped Asha Vale earn $3.80…".
+    var headline: String = ""
 }
 
 /// Report categories for trust & safety.

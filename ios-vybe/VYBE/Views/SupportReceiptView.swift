@@ -15,6 +15,12 @@ struct SupportReceiptView: View {
     @State private var shimmer = false
     @State private var appeared = false
 
+    private var artistEarnedLabel: String {
+        receipt.artistEarnedUSD > 0
+            ? String(format: "$%.2f", receipt.artistEarnedUSD)
+            : "$\(receipt.amountDriven)"
+    }
+
     var body: some View {
         ZStack {
             VYBE.bg.ignoresSafeArea()
@@ -110,11 +116,25 @@ struct SupportReceiptView: View {
                         .multilineTextAlignment(.center)
                 }
 
+                // The money moment — headline copy
+                if !receipt.headline.isEmpty {
+                    Text(receipt.headline)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(VYBE.textSecondary)
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(3)
+                        .padding(.horizontal, 4)
+                }
+
+                if let badge = receipt.badgeProgress {
+                    NeonTag(text: badge, color: VYBE.gold, icon: "rosette")
+                }
+
                 // Impact metrics
                 HStack(spacing: 0) {
-                    receiptMetric("\(receipt.vybeScoreEarned)", "VYBE Score earned", VYBE.gold)
+                    receiptMetric("+\(receipt.vybeScoreEarned)", "VYBE Score earned", VYBE.gold)
                     Divider().frame(height: 44).overlay(VYBE.stroke)
-                    receiptMetric("$\(receipt.amountDriven)", "Artist earnings driven", VYBE.green)
+                    receiptMetric(artistEarnedLabel, "Artist earned", VYBE.green)
                     Divider().frame(height: 44).overlay(VYBE.stroke)
                     receiptMetric(receipt.streamingComparison, "vs streaming", VYBE.magenta)
                 }

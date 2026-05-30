@@ -23,6 +23,17 @@ struct DiscoverView: View {
             limit: 4))
     }
 
+    /// One recognizable anchor per genre for the "Sounds Like…" quick selector.
+    private var soundsLikeAnchors: [AnchorArtist] {
+        var seen = Set<String>()
+        var out: [AnchorArtist] = []
+        for a in Mock.anchors where !seen.contains(a.genre) {
+            seen.insert(a.genre); out.append(a)
+            if out.count == 8 { break }
+        }
+        return out
+    }
+
     private var filteredArtists: [Artist] {
         guard !query.isEmpty else { return Mock.artists }
         return Mock.artists.filter {
@@ -50,6 +61,7 @@ struct DiscoverView: View {
                         sceneSpotlightsSection
                         moodGrid
                         risingSection
+                        soundsLikeSection
                         hiddenGemsSection
                         nearYouSection
                         viralSection
@@ -75,6 +87,37 @@ struct DiscoverView: View {
                     }
             }
             .environment(app)
+        }
+    }
+
+    // MARK: - Sounds Like… anchor selector
+
+    private var soundsLikeSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(title: "🎯 Sounds Like…")
+            Text("Pick a name you love — we'll find the unknowns who sound like them.")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(VYBE.textSecondary)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(soundsLikeAnchors) { anchor in
+                        NavigationLink(value: Route.soundsLike(anchor.name)) {
+                            VStack(spacing: 6) {
+                                AvatarView(seed: anchor.name, size: 56)
+                                Text(anchor.name)
+                                    .font(.system(size: 11, weight: .bold)).foregroundStyle(VYBE.text)
+                                    .lineLimit(1).frame(width: 72)
+                                Text(anchor.genre)
+                                    .font(.system(size: 9, weight: .semibold)).foregroundStyle(VYBE.textSecondary)
+                                    .lineLimit(1).frame(width: 72)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 20)
+            }
+            .padding(.horizontal, -20)
         }
     }
 

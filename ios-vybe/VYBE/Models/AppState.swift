@@ -154,29 +154,80 @@ final class AppState {
 
     /// Tip an artist (mock dollars)
     func tipArtist(_ artistId: String, amount: Int) {
-        tipsSent += amount
-        totalEarningsDriven += amount
-        addScore(amount * 2, reason: "Tipped artist")
-        artistLiveEarnings += amount
+        _ = recordSupport(.tip(amount), artist: Mock.artist(artistId))
     }
 
     /// Buy a drop (exclusive content)
     func buyDrop(_ artistId: String, amount: Int) {
-        dropsBought += 1
-        totalEarningsDriven += amount
-        addScore(amount * 3, reason: "Bought exclusive drop")
-        artistLiveEarnings += amount
+        _ = recordSupport(.buyDrop(amount), artist: Mock.artist(artistId))
     }
 
     /// Boost (amplify share reach)
     func boost(_ artistId: String) {
-        addScore(150, reason: "Boosted artist")
-        totalEarningsDriven += 15
-        artistLiveEarnings += 15
+        _ = recordSupport(.boost, artist: Mock.artist(artistId))
     }
 
     func addScore(_ pts: Int, reason: String = "") {
         withAnimation(.snappy) { vybeScore += pts }
+    }
+
+    // MARK: - Canonical support engine
+
+    /// Log of every support action — powers the artist dashboard activity feed.
+    var supportEvents: [SupportEvent] = []
+    /// The fan's live rank on each artist's board (lower = better).
+    var fanRankByArtist: [String: Int] = [:]
+
+    /// The fan's current rank on an artist's board.
+    func rank(forArtist artistId: String) -> Int {
+        fanRankByArtist[artistId]
+            ?? Mock.fundedArtists.first { $0.artistId == artistId }?.rank
+            ?? Int.random(in: 38...92)
+    }
+
+    private func improveRank(_ artistId: String) -> Int {
+        let improved = max(1, rank(forArtist: artistId) - Int.random(in: 3...12))
+        fanRankByArtist[artistId] = improved
+        return improved
+    }
+
+    /// The single, reusable support → receipt pipeline. Every meaningful support
+    /// action routes through here so economics, scoring, rank, the activity log,
+    /// and the shareable receipt all stay consistent.
+    @discardableResult
+    func recordSupport(_ action: SupportAction, artist: Artist, songTitle: String? = nil, badge: String? = nil) -> SupportReceipt {
+        let outcome = SupportEconomics.outcome(for: action)
+
+        // Per-action counters.
+        switch action {
+        case .share, .discover: shareCount += 1
+        case .tip(let amt): tipsSent += amt
+        case .buyDrop: dropsBought += 1
+        case .rsvp: showsAttended += 1
+        default: break
+        }
+
+        // Core economy.
+        streamsGenerated += outcome.streams
+        totalEarningsDriven += max(1, Int(outcome.artistDollars.rounded()))
+        artistLiveEarnings += max(1, Int(outcome.artistDollars.rounded()))
+        viralImpact = min(100, viralImpact + outcome.viralBump)
+        addScore(outcome.score, reason: action.verb)
+
+        let newRank = improveRank(artist.id)
+
+        // Activity log (newest first).
+        supportEvents.insert(SupportEvent(
+            id: UUID().uuidString, artistId: artist.id, artistName: artist.name,
+            fanName: "you", verb: action.verb, dollars: outcome.artistDollars,
+            score: outcome.score, minutesAgo: 0), at: 0)
+
+        let receipt = SupportEconomics.makeReceipt(
+            artist: artist, action: action, outcome: outcome,
+            newRank: newRank, songTitle: songTitle, badge: badge)
+        receiptHistory.append(receipt)
+        hapticSuccess()
+        return receipt
     }
 
     // MARK: - VYBE Loop
@@ -323,80 +374,37 @@ final class AppState {
     func supportFromVibeCheck(_ song: Song) {
         savedSongs.insert(song.id)
         followedArtists.insert(song.artistId)
-        // Early Discoverer bonus for underground artists
-        let isRising = Mock.artists.first { $0.id == song.artistId }?.isUndergroundRising ?? false
-        let bonus = isRising ? 200 : 75
-        addScore(bonus, reason: "Early Discoverer: supported \(song.artistName)")
-        hapticSuccess()
-        
-        // Also generate a support receipt
         let artist = Mock.artist(song.artistId)
-        let receipt = Mock.generateReceipt(for: artist, action: "Discovered via Vibe Check: \(song.title)", score: bonus, streams: 500)
-        receiptHistory.append(receipt)
+        if artist.isUndergroundRising || artist.popularityTier != "established" {
+            discoveredArtists.insert(artist.id)
+            discoveredGenres.insert(artist.genre)
+        }
+        _ = recordSupport(.discover, artist: artist, songTitle: song.title, badge: "Early Discoverer")
     }
 
     // MARK: - Discovery Actions
 
-    /// Support an artist surfaced by the "Hidden Gems" engine. Grants the Early
-    /// Discoverer bonus, tags the artist "Discovered by you", updates the fan's
-    /// Music Personality, and returns a shareable Support Receipt for the moment.
+    /// Support an artist surfaced by the "Hidden Gems" engine. Tags the artist
+    /// "Discovered by you", updates the fan's Music Personality, and returns a
+    /// shareable Support Receipt for the moment.
     @discardableResult
     func supportDiscovery(_ artist: Artist) -> SupportReceipt {
         followedArtists.insert(artist.id)
         discoveredArtists.insert(artist.id)
         discoveredGenres.insert(artist.genre)
-
-        // The more obscure the artist, the bigger the Early Discoverer bonus.
-        let bonus: Int
-        switch artist.popularityTier {
-        case "undiscovered": bonus = 300
-        case "underground": bonus = 200
-        default: bonus = 120
-        }
-        let streams = Int.random(in: 200...900)
-        streamsGenerated += streams
-        totalEarningsDriven += Int(Double(streams) * 0.12) + 8
-        shareCount += 1
-        viralImpact = min(100, viralImpact + 2)
-        artistLiveEarnings += Int(Double(streams) * 0.12) + 8
-
-        addScore(bonus, reason: "Early Discoverer: \(artist.name)")
-        hapticSuccess()
-
-        let receipt = Mock.generateReceipt(
-            for: artist,
-            action: "Discovered \(artist.name) before everyone",
-            score: bonus,
-            streams: streams)
-        receiptHistory.append(receipt)
-        return receipt
+        return recordSupport(.discover, artist: artist, badge: "Early Discoverer unlocked!")
     }
 
-    /// Simulate the full support action in the loop
+    /// Simulate the full support action in the loop, routed through the reusable
+    /// support engine so the payoff numbers are real (not hard-coded).
     func loopSupportArtist() {
         let artist = Mock.artist(loopArtistId)
-        let streams = Int.random(in: 500...2000)
-        let scoreEarned = 750
-        streamsGenerated += streams
-        totalEarningsDriven += Int(Double(streams) * 0.12) + 10
-        shareCount += 1
-        viralImpact = min(100, viralImpact + 3)
         savedSongs.insert(loopSongId)
         followedArtists.insert(loopArtistId)
-
-        addScore(scoreEarned, reason: "Supported \(artist.name)")
-        hapticSuccess()
-
-        loopReceipt = Mock.generateReceipt(
-            for: artist,
-            action: "Streamed & shared Gravity Loves You",
-            score: scoreEarned,
-            streams: streams
-        )
-        receiptHistory.append(loopReceipt!)
-
-        // Artist also earns
-        artistLiveEarnings += Int(Double(streams) * 0.12) + 10
+        discoveredArtists.insert(loopArtistId)
+        discoveredGenres.insert(artist.genre)
+        let songTitle = Mock.songs(for: loopArtistId).first?.title ?? "their latest single"
+        loopReceipt = recordSupport(.share, artist: artist, songTitle: songTitle, badge: "Early Discoverer unlocked!")
 
         withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
             loopShowPayoff = true
