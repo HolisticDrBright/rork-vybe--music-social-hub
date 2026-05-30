@@ -28,6 +28,9 @@ enum Route: Hashable {
     case collabChallenge(String)// Collab challenge detail
     case collabReview(String)   // Creator review mode for a challenge
     case upcomingDrop(String)   // Upcoming collab drop detail
+    case sleeve(String)         // Interactive song sleeve (art + lyrics + lore)
+    case vybeTV                 // VYBE TV / Video Lounge
+    case sleeveBuilder          // Artist-side sleeve creation
 }
 
 extension View {
@@ -55,6 +58,9 @@ extension View {
             case .collabChallenge(let id): CollabChallengeDetailView(challengeId: id)
             case .collabReview(let id): SubmissionReviewView(challengeId: id)
             case .upcomingDrop(let id): UpcomingDropView(dropId: id)
+            case .sleeve(let id): SleeveDetailView(sleeveId: id)
+            case .vybeTV: VYBETVView()
+            case .sleeveBuilder: SleeveBuilderView()
             }
         }
     }

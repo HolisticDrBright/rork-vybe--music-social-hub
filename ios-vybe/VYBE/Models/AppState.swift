@@ -104,6 +104,18 @@ final class AppState {
     /// Collab-related fan badges earned ("First Heard It", "Collab Scout").
     var collabBadges: Set<String> = []
 
+    // --- Sleeves + Videos (album-worlds) ---
+    /// Sleeve ids the fan has opened.
+    var openedSleeves: Set<String> = []
+    /// Sleeves whose art the fan reacted to.
+    var reactedSleeves: Set<String> = []
+    /// Video ids the fan has watched.
+    var watchedVideos: Set<String> = []
+    /// Sleeve/video badges earned ("First Opened It", "Sleeve Collector", "Video Premiere Crew").
+    var sleeveBadges: Set<String> = []
+    /// Sleeves created by the artist in the Sleeve Builder (prototype, in-session).
+    var customSleeves: [SongSleeve] = []
+
     // --- Haptic feedback helper ---
     func haptic(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
         UIImpactFeedbackGenerator(style: style).impactOccurred()
@@ -346,6 +358,53 @@ final class AppState {
         collabBadges.insert("First Heard It")
         collabBadges.insert("Collab Scout")
         addScore(180, reason: "Pre-saved a collab drop early")
+        hapticSuccess()
+    }
+
+    // MARK: - Sleeves + Videos
+
+    /// All sleeves available to the app (mock + builder-created).
+    var allSleeves: [SongSleeve] { Mock.sleeves + customSleeves }
+    func sleeve(_ id: String) -> SongSleeve? { allSleeves.first { $0.id == id } }
+    func sleeve(forSong songId: String) -> SongSleeve? { allSleeves.first { $0.songId == songId } }
+
+    /// Open a sleeve — small VYBE Score + collector progress.
+    func openSleeve(_ id: String) {
+        guard !openedSleeves.contains(id) else { return }
+        openedSleeves.insert(id)
+        sleeveBadges.insert("First Opened It")
+        if openedSleeves.count >= 3 { sleeveBadges.insert("Sleeve Collector") }
+        addScore(30, reason: "Opened a sleeve")
+        haptic(.light)
+    }
+
+    func reactToSleeveArt(_ id: String) {
+        guard !reactedSleeves.contains(id) else { return }
+        reactedSleeves.insert(id)
+        addScore(10, reason: "Reacted to sleeve art")
+        haptic(.light)
+    }
+
+    func watchVideo(_ video: MusicVideo) {
+        let firstWatch = !watchedVideos.contains(video.id)
+        watchedVideos.insert(video.id)
+        if video.status == .premiere { sleeveBadges.insert("Video Premiere Crew") }
+        if firstWatch { addScore(25, reason: "Watched a video") }
+        hapticSuccess()
+    }
+
+    /// Support a drop from inside a sleeve — bigger score + Sleeve Collector progress.
+    @discardableResult
+    func supportDrop(artist: Artist, title: String, amount: Int = 8) -> SupportReceipt {
+        sleeveBadges.insert("Sleeve Collector")
+        return recordSupport(.buyDrop(amount), artist: artist, songTitle: title,
+                             badge: "Sleeve Collector progress unlocked")
+    }
+
+    /// Publish a builder-created sleeve (prototype, in-session).
+    func publishSleeve(_ sleeve: SongSleeve) {
+        withAnimation(.snappy) { customSleeves.insert(sleeve, at: 0) }
+        addScore(150, reason: "Published a drop sleeve")
         hapticSuccess()
     }
 

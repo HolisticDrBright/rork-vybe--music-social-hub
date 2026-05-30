@@ -16,6 +16,7 @@ struct SongDetailView: View {
     @State private var showShareSheet = false
     @State private var rotate = false
     @State private var receipt: SupportReceipt? = nil
+    @State private var playingVideo: MusicVideo? = nil
 
     private var song: Song { Mock.allSongs.first { $0.id == songId } ?? Mock.songs[0] }
     private var artist: Artist { Mock.artist(song.artistId) }
@@ -35,6 +36,7 @@ struct SongDetailView: View {
                     scrubber
                     controls
                     actionRow
+                    sleeveBlock
                     viralCard
                     dualEarningsCard
                     NavigationLink(value: Route.artist(artist.id)) {
@@ -49,6 +51,7 @@ struct SongDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .sheet(isPresented: $showShareSheet) { ShareSheet(song: song) }
+        .sheet(item: $playingVideo) { VideoPlayerSheet(video: $0).environment(app) }
         .sheet(item: $receipt) { r in
             NavigationStack {
                 SupportReceiptView(receipt: r)
@@ -151,6 +154,42 @@ struct SongDetailView: View {
             .vybeCard(corner: 16)
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: - Sleeve + Video
+
+    @ViewBuilder private var sleeveBlock: some View {
+        if let sleeve = app.sleeve(forSong: songId) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Label("Open the Sleeve", systemImage: "rectangle.portrait.on.rectangle.portrait.angled.fill")
+                        .font(.system(size: 15, weight: .heavy, design: .rounded)).foregroundStyle(sleeve.era.accents[0])
+                    Spacer()
+                    NavigationLink(value: Route.vybeTV) {
+                        Text("VYBE TV →").font(.system(size: 12, weight: .bold)).foregroundStyle(VYBE.magenta)
+                    }
+                }
+                SleevePreviewCard(sleeve: sleeve, hasVideo: sleeve.videoId != nil)
+                if let v = sleeve.videoId.flatMap({ Mock.video($0) }) {
+                    Button { playingVideo = v } label: {
+                        HStack(spacing: 12) {
+                            ZStack {
+                                HoloArt(seed: v.previewSeed, corner: 12).frame(width: 60, height: 44)
+                                Image(systemName: "play.circle.fill").font(.system(size: 22)).foregroundStyle(.white)
+                            }
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Watch the music video").font(.system(size: 13, weight: .bold)).foregroundStyle(VYBE.text)
+                                Text("\(v.status.label) · \(timeString(v.durationSec))").font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right").foregroundStyle(VYBE.textTertiary)
+                        }
+                        .padding(10).vybeCard(corner: 14)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
     }
 
     private var viralCard: some View {

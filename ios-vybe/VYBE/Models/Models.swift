@@ -507,3 +507,144 @@ struct UpcomingDrop: Identifiable, Hashable {
     var releaseText: String
 }
 
+
+// MARK: - Sleeves + Videos (album-worlds: art, lore, lyrics, music videos)
+
+/// Visual era/style of a sleeve.
+enum SleeveEra: String, CaseIterable, Identifiable, Hashable {
+    case vinyl70s = "70s Vinyl"
+    case cd90s = "90s CD Booklet"
+    case newAge = "New Age Cosmic"
+    case cyberZine = "Cyber Zine"
+    case handmade = "Handmade Zine"
+    case sceneFlyer = "Scene Flyer"
+    var id: String { rawValue }
+    var label: String { rawValue }
+    var tagline: String {
+        switch self {
+        case .vinyl70s: return "Gatefold cosmic vinyl"
+        case .cd90s: return "Jewel-case booklet w/ lyrics"
+        case .newAge: return "Spiritual cosmic art"
+        case .cyberZine: return "Cyberpunk video single"
+        case .handmade: return "Cut-and-paste zine collage"
+        case .sceneFlyer: return "Local scene flyer"
+        }
+    }
+    var icon: String {
+        switch self {
+        case .vinyl70s: return "circle.circle"
+        case .cd90s: return "opticaldisc"
+        case .newAge: return "moon.stars.fill"
+        case .cyberZine: return "bolt.horizontal.circle.fill"
+        case .handmade: return "scissors"
+        case .sceneFlyer: return "doc.richtext.fill"
+        }
+    }
+    /// Accent colors that tint the sleeve's pages.
+    var accents: [Color] {
+        switch self {
+        case .vinyl70s: return [Color(red: 0.88, green: 0.52, blue: 0.18), Color(red: 0.78, green: 0.22, blue: 0.36)]
+        case .cd90s: return [VYBE.cyan, VYBE.blue]
+        case .newAge: return [VYBE.purple, Color(red: 0.45, green: 0.8, blue: 0.95)]
+        case .cyberZine: return [VYBE.magenta, VYBE.cyan]
+        case .handmade: return [VYBE.gold, VYBE.magenta]
+        case .sceneFlyer: return [VYBE.green, VYBE.gold]
+        }
+    }
+}
+
+/// One production / credit line.
+struct CreditLine: Identifiable, Hashable {
+    let id: String
+    var role: String
+    var name: String
+}
+
+/// A block of fictional, mock lyrics (never real copyrighted lyrics).
+struct LyricBlock: Identifiable, Hashable {
+    let id: String
+    var label: String      // "Verse 1", "Chorus", "Bridge"
+    var lines: [String]
+}
+
+/// A "behind the song" story note.
+struct BehindSongNote: Identifiable, Hashable {
+    let id: String
+    var heading: String
+    var body: String
+}
+
+/// An extra inside-art / moodboard panel.
+struct SleevePanel: Identifiable, Hashable {
+    let id: String
+    var kind: String       // "art" or "note"
+    var title: String
+    var artSeed: String
+    var caption: String
+}
+
+/// Premiere status for a music video.
+enum VideoPremiereStatus: String, Hashable {
+    case premiere = "Premiere"
+    case newRelease = "New"
+    case bornOnVYBE = "Born on VYBE"
+    case underground = "Underground"
+    case classic = "Classic"
+    var label: String { rawValue }
+    var color: Color {
+        switch self {
+        case .premiere: return VYBE.magenta
+        case .newRelease: return VYBE.green
+        case .bornOnVYBE: return VYBE.cyan
+        case .underground: return VYBE.purple
+        case .classic: return VYBE.gold
+        }
+    }
+    var icon: String {
+        switch self {
+        case .premiere: return "sparkles.tv.fill"
+        case .newRelease: return "play.tv.fill"
+        case .bornOnVYBE: return "sparkles"
+        case .underground: return "eye.fill"
+        case .classic: return "star.fill"
+        }
+    }
+}
+
+/// A music video (mock / placeholder — no real playback).
+struct MusicVideo: Identifiable, Hashable {
+    let id: String
+    var songId: String?
+    var artistId: String
+    var title: String
+    var artistName: String
+    var durationSec: Int
+    var previewSeed: String
+    var status: VideoPremiereStatus
+    var scene: String          // city / scene
+    var behindTheVideo: String
+    var reactions: Int
+}
+
+/// The full interactive sleeve for a song / drop.
+struct SongSleeve: Identifiable, Hashable {
+    let id: String
+    var songId: String
+    var artistId: String
+    var title: String
+    var artistName: String
+    var era: SleeveEra
+    var coverArtSeed: String
+    var tagline: String
+    var lyricExcerpt: String           // one line for previews
+    var mockLyrics: [LyricBlock]       // fictional lyrics only
+    var linerNotes: String
+    var thankYous: String
+    var behindTheSong: BehindSongNote
+    var credits: [CreditLine]
+    var visualSymbols: [String]        // SF symbols for hidden visual details
+    var insidePanels: [SleevePanel]
+    var videoId: String?
+    var supporterBonus: String         // unlockable supporter content placeholder
+    var fanReactions: [String]
+}

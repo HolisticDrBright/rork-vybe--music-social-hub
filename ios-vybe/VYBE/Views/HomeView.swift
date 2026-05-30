@@ -25,6 +25,9 @@ struct HomeView: View {
                     SectionHeader(title: "🔥 Trending Now")
                     trendingStrip
 
+                    // Sleeves + VYBE TV
+                    sleeveTVEntry
+
                     // Collab drops born on VYBE
                     if !app.upcomingDrops.isEmpty {
                         SectionHeader(title: "✨ Born on VYBE")
@@ -152,6 +155,48 @@ struct HomeView: View {
             .padding(.horizontal, 20)
         }
         .padding(.horizontal, -20)
+    }
+
+    private var sleeveTVEntry: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // VYBE TV banner
+            NavigationLink(value: Route.vybeTV) {
+                HStack(spacing: 14) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 14).fill(VYBE.holo).frame(width: 52, height: 52)
+                        Image(systemName: "tv.fill").font(.system(size: 22)).foregroundStyle(.white)
+                    }
+                    VStack(alignment: .leading, spacing: 3) {
+                        HStack(spacing: 6) {
+                            Text("VYBE TV").font(.system(size: 15, weight: .black, design: .rounded)).foregroundStyle(VYBE.text)
+                            NeonTag(text: "VIDEO LOUNGE", color: VYBE.magenta, icon: "play.tv.fill")
+                        }
+                        Text("Premieres, underground videos & behind-the-video stories")
+                            .font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineLimit(1)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right").foregroundStyle(VYBE.textTertiary)
+                }
+                .padding(14)
+                .background { ZStack { VYBE.card; HoloArt(seed: "vybetvbanner").opacity(0.14) }.clipShape(.rect(cornerRadius: 18)) }
+                .overlay(RoundedRectangle(cornerRadius: 18).stroke(VYBE.magenta.opacity(0.25), lineWidth: 1))
+            }
+            .buttonStyle(.plain)
+
+            // New Sleeve Drops rail
+            HStack(alignment: .firstTextBaseline) {
+                Text("🎁 New Sleeve Drops").font(.system(size: 19, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                Spacer()
+                Text("Open them like vinyl").font(.system(size: 11, weight: .semibold)).foregroundStyle(VYBE.textSecondary)
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 14) {
+                    ForEach(app.allSleeves) { SleeveRailCard(sleeve: $0) }
+                }
+                .padding(.horizontal, 20)
+            }
+            .padding(.horizontal, -20)
+        }
     }
 
     private var bornOnVYBEStrip: some View {

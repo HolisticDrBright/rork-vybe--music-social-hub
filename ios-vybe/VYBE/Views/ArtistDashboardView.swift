@@ -24,6 +24,7 @@ struct ArtistDashboardView: View {
                     Group {
                         headerCard
                         collabLabModule
+                        sleeveBuilderModule
                         growthChart
                         earningsVsStreaming
                         recognitionCard
@@ -96,6 +97,43 @@ struct ArtistDashboardView: View {
             .buttonStyle(.plain)
         }
         .sheet(isPresented: $showCollabCreate) { CreateCollabChallengeView().environment(app) }
+    }
+
+    // MARK: - Sleeve Builder module
+
+    private var sleeveBuilderModule: some View {
+        VStack(spacing: 12) {
+            NavigationLink(value: Route.sleeveBuilder) {
+                HStack(spacing: 12) {
+                    Image(systemName: "rectangle.stack.badge.plus").font(.system(size: 18)).foregroundStyle(.white)
+                        .frame(width: 44, height: 44).background(VYBE.holoSunset, in: .circle)
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(spacing: 6) {
+                            Text("Sleeve Builder").font(.system(size: 16, weight: .black, design: .rounded)).foregroundStyle(VYBE.text)
+                            NeonTag(text: "NEW", color: VYBE.gold, icon: "sparkles")
+                        }
+                        Text("Give your drop art, lyrics & liner notes").font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right").foregroundStyle(VYBE.textTertiary)
+                }
+                .padding(16)
+                .background { ZStack { VYBE.card; HoloArt(seed: "sleevebuildermod").opacity(0.14) }.clipShape(.rect(cornerRadius: 20)) }
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke(VYBE.gold.opacity(0.3), lineWidth: 1))
+            }
+            .buttonStyle(.plain)
+            NavigationLink(value: Route.vybeTV) {
+                HStack(spacing: 8) {
+                    Image(systemName: "tv.fill").font(.system(size: 13, weight: .bold))
+                    Text("Preview on VYBE TV").font(.system(size: 13, weight: .heavy, design: .rounded))
+                    Spacer()
+                    Image(systemName: "arrow.right").font(.system(size: 12, weight: .bold))
+                }
+                .foregroundStyle(VYBE.magenta).padding(.horizontal, 16).padding(.vertical, 11)
+                .background(VYBE.magenta.opacity(0.1), in: .capsule)
+            }
+            .buttonStyle(.plain)
+        }
     }
 
     private func collabStat(_ value: String, _ label: String, _ color: Color) -> some View {

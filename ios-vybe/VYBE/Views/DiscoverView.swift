@@ -61,6 +61,7 @@ struct DiscoverView: View {
                         sceneSpotlightsSection
                         moodGrid
                         risingSection
+                        sleevesSection
                         soundsLikeSection
                         hiddenGemsSection
                         nearYouSection
@@ -214,6 +215,32 @@ struct DiscoverView: View {
                     MoodTile(mood: mood)
                 }
             }
+        }
+    }
+
+    private var sleevesSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("💿 Sleeves Worth Opening").font(.system(size: 20, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                Spacer()
+                NavigationLink(value: Route.vybeTV) {
+                    HStack(spacing: 3) {
+                        Text("VYBE TV").font(.system(size: 13, weight: .bold))
+                        Image(systemName: "play.tv.fill").font(.system(size: 11, weight: .bold))
+                    }
+                    .foregroundStyle(VYBE.magenta)
+                }
+                .buttonStyle(.plain)
+            }
+            Text("Album-worlds: cover art, mock lyrics, liner notes & videos.")
+                .font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 14) {
+                    ForEach(app.allSleeves) { SleeveRailCard(sleeve: $0) }
+                }
+                .padding(.horizontal, 20)
+            }
+            .padding(.horizontal, -20)
         }
     }
 

@@ -334,6 +334,9 @@ enum Mock {
         Badge(id: "b8", name: "Early Discoverer", icon: "sparkle.magnifyingglass", desc: "Found a song before it went viral", earned: true),
         Badge(id: "b9", name: "Superfan", icon: "heart.circle.fill", desc: "Engaged 100+ days in a row", earned: false),
         Badge(id: "b10", name: "Tastemaker", icon: "wand.and.stars", desc: "Your playlists shaped the charts", earned: false),
+        Badge(id: "b11", name: "First Opened It", icon: "rectangle.portrait.on.rectangle.portrait.angled.fill", desc: "Opened a song's sleeve", earned: false),
+        Badge(id: "b12", name: "Sleeve Collector", icon: "rectangle.stack.fill", desc: "Opened & supported 3+ sleeves", earned: false),
+        Badge(id: "b13", name: "Video Premiere Crew", icon: "play.tv.fill", desc: "Caught a video premiere on VYBE TV", earned: false),
     ]
 
     // MARK: - Rewards
@@ -613,4 +616,268 @@ enum Mock {
     ]
 
     static func collabChallenge(_ id: String) -> CollabChallenge? { collabChallenges.first { $0.id == id } }
+
+    // MARK: - Sleeves (interactive song art + lore). All lyrics are fictional/mock.
+
+    static let sleeves: [SongSleeve] = [
+        // New Age cosmic — LUNA TIDE · Gravity Loves You
+        SongSleeve(
+            id: "sl-s3", songId: "s3", artistId: "a4", title: "Gravity Loves You", artistName: "LUNA TIDE",
+            era: .newAge, coverArtSeed: "Gravity Loves You sleeve",
+            tagline: "Side A · a love letter to the tide",
+            lyricExcerpt: "gravity loves you / so I let myself fall",
+            mockLyrics: [
+                LyricBlock(id: "ly1", label: "Verse 1", lines: [
+                    "soft static on the shoreline glow",
+                    "the moon keeps time, the tide moves slow",
+                    "I traced your name in silver foam",
+                    "the ocean hummed and called us home"]),
+                LyricBlock(id: "ly2", label: "Chorus", lines: [
+                    "gravity loves you, so I let myself fall",
+                    "no need for a reason, no need at all",
+                    "spinning in the quiet, weightless and true",
+                    "gravity loves you, and so do I too"]),
+                LyricBlock(id: "ly3", label: "Bridge", lines: [
+                    "if the stars go out, I'll still know where you are",
+                    "you're the low blue light, the nearest far"]),
+            ],
+            linerNotes: "Recorded over three foggy nights in a Portland attic with the windows open. We left the reverb tails long on purpose — the room was part of the band. Play it loud, then play it quiet, then play it again at 3am.",
+            thankYous: "Endless love to mom, to the attic, to everyone who ever lent us a tape machine. To you, holding this sleeve — you made it real.",
+            behindTheSong: BehindSongNote(id: "bs1", heading: "The night it arrived",
+                body: "It started as a voice memo of waves and a half-asleep melody. I almost deleted it. Instead I sang the chorus into a broken mic and the whole song fell out in twenty minutes. Some songs you write; this one we just caught."),
+            credits: [
+                CreditLine(id: "c1", role: "Written by", name: "LUNA TIDE"),
+                CreditLine(id: "c2", role: "Produced by", name: "LUNA TIDE & Hollow Gauze"),
+                CreditLine(id: "c3", role: "Mixed by", name: "Pale Light Audio"),
+                CreditLine(id: "c4", role: "Cover art", name: "Aria Vale (collage)"),
+            ],
+            visualSymbols: ["moon.stars.fill", "drop.fill", "sparkle", "waveform.path.ecg"],
+            insidePanels: [
+                SleevePanel(id: "p1", kind: "art", title: "Inside spread", artSeed: "luna inside spread", caption: "A double-page wash of tide-pool blues."),
+                SleevePanel(id: "p2", kind: "note", title: "Hidden detail", artSeed: "luna hidden", caption: "Look closely at the foam — there's a tiny constellation only fans noticed."),
+            ],
+            videoId: "mv-s3",
+            supporterBonus: "Supporters unlock the attic demo + a high-res gatefold print (placeholder).",
+            fanReactions: ["this is the cover of the year", "the hidden constellation made me cry", "first thing I've wanted to OWN in years"]),
+
+        // Handmade zine — Velvet Static · Static & Gold
+        SongSleeve(
+            id: "sl-s5", songId: "s5", artistId: "a3", title: "Static & Gold", artistName: "Velvet Static",
+            era: .handmade, coverArtSeed: "Static & Gold sleeve",
+            tagline: "cut + paste / xeroxed at the laundromat",
+            lyricExcerpt: "we were static, we were gold / two voices in the cold",
+            mockLyrics: [
+                LyricBlock(id: "ly1", label: "Verse 1", lines: [
+                    "amp hum and a busted fuzz",
+                    "we played too loud just because",
+                    "the ceiling rattled, the cat ran",
+                    "we caught it live on a borrowed cam"]),
+                LyricBlock(id: "ly2", label: "Chorus", lines: [
+                    "we were static, we were gold",
+                    "two voices in the cold",
+                    "turn it up until it breaks",
+                    "that's the sound a young heart makes"]),
+            ],
+            linerNotes: "Glued together at the kitchen table at 2am. The smudges are real. If the lyric sheet is crooked, that's because it is. We wouldn't change a thing.",
+            thankYous: "Thanks to the laundromat that let us use the copier, to Mohawk for the floor space, and to LUNA TIDE for the second voice that finished the song.",
+            behindTheSong: BehindSongNote(id: "bs1", heading: "A zine, not a product",
+                body: "We grew up trading hand-made zines in record-store stairwells. This sleeve is our love letter to that — staples, marker, and all."),
+            credits: [
+                CreditLine(id: "c1", role: "Written by", name: "Velvet Static"),
+                CreditLine(id: "c2", role: "Feature", name: "LUNA TIDE"),
+                CreditLine(id: "c3", role: "Recorded by", name: "Garage Static"),
+                CreditLine(id: "c4", role: "Collage", name: "the whole band, badly"),
+            ],
+            visualSymbols: ["scissors", "guitars", "flame.fill", "doc.on.doc"],
+            insidePanels: [
+                SleevePanel(id: "p1", kind: "art", title: "Lyric scrawl", artSeed: "static scrawl", caption: "Handwritten lyrics, coffee-stained on purpose."),
+            ],
+            videoId: "mv-collab",
+            supporterBonus: "Supporters get a numbered, hand-stamped zine page (placeholder).",
+            fanReactions: ["the staples!! the SMUDGES!!", "feels like a record store stairwell in 2003", "bought it just to hold it"]),
+
+        // Cyber zine — NOVA REIGN · Neon Bloodstream
+        SongSleeve(
+            id: "sl-s1", songId: "s1", artistId: "a1", title: "Neon Bloodstream", artistName: "NOVA REIGN",
+            era: .cyberZine, coverArtSeed: "Neon Bloodstream sleeve",
+            tagline: "single + video / system overload",
+            lyricExcerpt: "neon in my bloodstream / running like a live wire",
+            mockLyrics: [
+                LyricBlock(id: "ly1", label: "Drop", lines: [
+                    "neon in my bloodstream",
+                    "running like a live wire",
+                    "city's a circuit, I'm the spark",
+                    "burning every monitor in the dark"]),
+                LyricBlock(id: "ly2", label: "Chorus", lines: [
+                    "overload, overload",
+                    "watch the whole grid glow",
+                    "I don't fade, I don't dim",
+                    "I'm the surge, I'm the hymn"]),
+            ],
+            linerNotes: "Built entirely in the box at 4am with the lights off. Every sound is a screenshot of a feeling. Render it at full brightness.",
+            thankYous: "To the crowd that lights their phones when the power cuts — you ARE the bloodstream.",
+            behindTheSong: BehindSongNote(id: "bs1", heading: "Maximalism on purpose",
+                body: "People said it was too much. That was the point. I wanted a song that felt like a city overclocking."),
+            credits: [
+                CreditLine(id: "c1", role: "Written & produced by", name: "NOVA REIGN"),
+                CreditLine(id: "c2", role: "Vocal design", name: "GLITCHCORE KID"),
+                CreditLine(id: "c3", role: "Video directed by", name: "Chrome Highway Films"),
+            ],
+            visualSymbols: ["bolt.fill", "cpu.fill", "tv.fill", "sparkles"],
+            insidePanels: [
+                SleevePanel(id: "p1", kind: "art", title: "Glitch spread", artSeed: "nova glitch", caption: "Datamoshed self-portrait. Stare for the hidden frame."),
+                SleevePanel(id: "p2", kind: "note", title: "Easter egg", artSeed: "nova egg", caption: "A QR-style sigil that 'unlocks' the alt mix (placeholder)."),
+            ],
+            videoId: "mv-s1",
+            supporterBonus: "Supporters unlock the alt 'overclock' mix + animated cover loop (placeholder).",
+            fanReactions: ["this should be on a TV wall", "the datamosh frame is unreal", "first single that felt like a WORLD"]),
+
+        // 90s CD booklet — Sable Mirage · 3AM Confessions
+        SongSleeve(
+            id: "sl-s7", songId: "s7", artistId: "a6", title: "3AM Confessions", artistName: "Sable Mirage",
+            era: .cd90s, coverArtSeed: "3AM Confessions sleeve",
+            tagline: "Track 4 · liner notes inside",
+            lyricExcerpt: "3am, the city's confession booth / I tell the dark the honest truth",
+            mockLyrics: [
+                LyricBlock(id: "ly1", label: "Verse 1", lines: [
+                    "phone face down, the ceiling fan",
+                    "I rehearse the words I never can",
+                    "smoke curls slow in the streetlight gold",
+                    "the quiet keeps the things I hold"]),
+                LyricBlock(id: "ly2", label: "Chorus", lines: [
+                    "3am, the city's confession booth",
+                    "I tell the dark the honest truth",
+                    "no one answers, that's alright",
+                    "some prayers are just for the night"]),
+                LyricBlock(id: "ly3", label: "Outro", lines: [
+                    "fade the fan, fade the gold",
+                    "keep the secrets, let them fold"]),
+            ],
+            linerNotes: "Tracked to tape, then bounced to a CD-R and listened to in a parked car — that's the real test. Read the lyrics with the booklet open like it's 1997.",
+            thankYous: "Special thanks to the late-night radio host who played the demo, to my sister for the harmonies, and to anyone who's ever confessed something to an empty room.",
+            behindTheSong: BehindSongNote(id: "bs1", heading: "Recorded in one take",
+                body: "I'd written it three times and hated it. The version you hear is the throwaway take at 3am with the wrong mic. Sometimes tired tells the truth."),
+            credits: [
+                CreditLine(id: "c1", role: "Written by", name: "Sable Mirage"),
+                CreditLine(id: "c2", role: "Produced by", name: "Velvet Hour"),
+                CreditLine(id: "c3", role: "Harmonies", name: "Amani Mirage"),
+                CreditLine(id: "c4", role: "Mastered by", name: "Smoke & Mirrors Mastering"),
+            ],
+            visualSymbols: ["opticaldisc", "moon.fill", "smoke.fill", "music.mic"],
+            insidePanels: [
+                SleevePanel(id: "p1", kind: "art", title: "Booklet pages", artSeed: "sable booklet", caption: "Four-panel fold-out with full lyrics + photos."),
+                SleevePanel(id: "p2", kind: "note", title: "Tray card", artSeed: "sable tray", caption: "Thank-yous hidden under the disc tray, the old-school way."),
+            ],
+            videoId: "mv-s7",
+            supporterBonus: "Supporters unlock the booklet PDF + the parked-car demo (placeholder).",
+            fanReactions: ["I can smell the CD booklet", "the one-take take is everything", "this belongs in a jewel case"]),
+
+        // 70s cosmic vinyl gatefold — Kairo Sol · Heritage
+        SongSleeve(
+            id: "sl-s6", songId: "s6", artistId: "a2", title: "Heritage (feat. Ami)", artistName: "Kairo Sol",
+            era: .vinyl70s, coverArtSeed: "Heritage sleeve",
+            tagline: "Gatefold · Side A / cosmic groove",
+            lyricExcerpt: "log drum gospel, ancestral light / we dance the diaspora into the night",
+            mockLyrics: [
+                LyricBlock(id: "ly1", label: "Movement I", lines: [
+                    "log drum gospel, ancestral light",
+                    "we dance the diaspora into the night",
+                    "hands in the air like a prayer set free",
+                    "the rhythm remembers what the books can't see"]),
+                LyricBlock(id: "ly2", label: "Refrain", lines: [
+                    "heritage, heritage, carry it on",
+                    "from the rooftop sunrise to the basement dawn"]),
+            ],
+            linerNotes: "Cut for vinyl and meant for a gatefold. Lay the sleeve open, drop the needle, and let Side A play all the way through. This is a record, not a playlist.",
+            thankYous: "To the elders, the rooftops, and Ami's voice. To Brooklyn at 2am. To the groove that connects us.",
+            behindTheSong: BehindSongNote(id: "bs1", heading: "A continuous Side A",
+                body: "We built the whole side as one journey — no skips. The log drum is sampled from a session with three generations of players in one room."),
+            credits: [
+                CreditLine(id: "c1", role: "Written by", name: "Kairo Sol & Ami"),
+                CreditLine(id: "c2", role: "Featured vocals", name: "Ami"),
+                CreditLine(id: "c3", role: "Percussion", name: "The Heritage Players"),
+                CreditLine(id: "c4", role: "Lacquer cut by", name: "Golden Pulse Mastering"),
+            ],
+            visualSymbols: ["sun.max.fill", "circle.circle", "hands.sparkles.fill", "music.quarternote.3"],
+            insidePanels: [
+                SleevePanel(id: "p1", kind: "art", title: "Gatefold interior", artSeed: "heritage gatefold", caption: "Sun-drenched interior painting that wraps both panels."),
+                SleevePanel(id: "p2", kind: "note", title: "Liner essay", artSeed: "heritage essay", caption: "A short essay on diaspora dance printed on the inner sleeve."),
+            ],
+            videoId: "mv-s6",
+            supporterBonus: "Supporters unlock the full continuous Side A + gatefold artwork (placeholder).",
+            fanReactions: ["a GATEFOLD. in 2026. yes.", "played Side A straight through, no skips", "the inner essay is a keeper"]),
+
+        // Scene flyer — GLITCHCORE KID · lol nothing matters
+        SongSleeve(
+            id: "sl-s8", songId: "s8", artistId: "a7", title: "lol nothing matters", artistName: "GLITCHCORE KID",
+            era: .sceneFlyer, coverArtSeed: "lol nothing matters sleeve",
+            tagline: "DIY flyer / basement show single",
+            lyricExcerpt: "lol nothing matters / so I scream it til it does",
+            mockLyrics: [
+                LyricBlock(id: "ly1", label: "Yell", lines: [
+                    "alarm clock heart, dead phone soul",
+                    "i made a hit in a bedroom hole",
+                    "everyone's online, no one's awake",
+                    "i'll be a legend for the irony's sake"]),
+                LyricBlock(id: "ly2", label: "Chorus", lines: [
+                    "lol nothing matters",
+                    "so i scream it til it does",
+                    "turn the autotune to glass",
+                    "and shatter it just because"]),
+            ],
+            linerNotes: "Designed like a basement-show flyer because that's where this lives. Photocopy it, tape it to a pole, come to the show.",
+            thankYous: "shoutout to the group chat, the one venue that books all-ages, and everyone who screamed the words back.",
+            behindTheSong: BehindSongNote(id: "bs1", heading: "Made in 40 minutes",
+                body: "Made it as a joke for the group chat. The joke got 540k plays. The joke is on me, and I love it."),
+            credits: [
+                CreditLine(id: "c1", role: "Everything by", name: "GLITCHCORE KID"),
+                CreditLine(id: "c2", role: "Flyer design", name: "the group chat"),
+                CreditLine(id: "c3", role: "Moral support", name: "energy drinks"),
+            ],
+            visualSymbols: ["doc.richtext.fill", "bolt.heart.fill", "person.3.fill", "exclamationmark.bubble.fill"],
+            insidePanels: [
+                SleevePanel(id: "p1", kind: "art", title: "Flyer back", artSeed: "glitch flyer back", caption: "Show dates + a maze you can actually solve."),
+            ],
+            videoId: "mv-s8",
+            supporterBonus: "Supporters get a printable show flyer + the 40-minute original render (placeholder).",
+            fanReactions: ["taped this to my locker", "the maze on the back is solvable??", "a JOKE that became a SCENE"]),
+    ]
+
+    static func sleeve(_ id: String) -> SongSleeve? { sleeves.first { $0.id == id } }
+    static func sleeve(forSong songId: String) -> SongSleeve? { sleeves.first { $0.songId == songId } }
+
+    // MARK: - Music Videos (VYBE TV / Video Lounge — mock placeholders)
+
+    static let musicVideos: [MusicVideo] = [
+        MusicVideo(id: "mv-s1", songId: "s1", artistId: "a1", title: "Neon Bloodstream", artistName: "NOVA REIGN",
+                   durationSec: 198, previewSeed: "Neon Bloodstream video", status: .premiere, scene: "Los Angeles",
+                   behindTheVideo: "Shot on one neon-lit night in a downtown parking structure. 400 fans showed up to be the crowd.", reactions: 4_210),
+        MusicVideo(id: "mv-s3", songId: "s3", artistId: "a4", title: "Gravity Loves You", artistName: "LUNA TIDE",
+                   durationSec: 247, previewSeed: "Gravity Loves You video", status: .newRelease, scene: "Portland",
+                   behindTheVideo: "Filmed at dawn on the coast with a single handheld camera and a lot of fog.", reactions: 1_980),
+        MusicVideo(id: "mv-collab", songId: nil, artistId: "a3", title: "Static & Gold (feat. LUNA TIDE)", artistName: "Velvet Static × LUNA TIDE",
+                   durationSec: 233, previewSeed: "Static & Gold video", status: .bornOnVYBE, scene: "Austin",
+                   behindTheVideo: "The collab that started as a VYBE Collab Lab challenge — shot on Super-8 in a laundromat.", reactions: 3_560),
+        MusicVideo(id: "mv-s8", songId: "s8", artistId: "a7", title: "lol nothing matters", artistName: "GLITCHCORE KID",
+                   durationSec: 142, previewSeed: "lol nothing matters video", status: .underground, scene: "Chicago",
+                   behindTheVideo: "Filmed on three phones at an all-ages basement show. The mosh pit is real.", reactions: 980),
+        MusicVideo(id: "mv-s6", songId: "s6", artistId: "a2", title: "Heritage (feat. Ami)", artistName: "Kairo Sol",
+                   durationSec: 264, previewSeed: "Heritage video", status: .newRelease, scene: "Brooklyn",
+                   behindTheVideo: "A rooftop-to-basement single take following the dance from sunset to sunrise.", reactions: 2_640),
+        MusicVideo(id: "mv-s7", songId: "s7", artistId: "a6", title: "3AM Confessions", artistName: "Sable Mirage",
+                   durationSec: 219, previewSeed: "3AM Confessions video", status: .classic, scene: "Atlanta",
+                   behindTheVideo: "One static shot of a parked car at 3am. Nothing happens. Everything happens.", reactions: 5_120),
+        MusicVideo(id: "mv-s4", songId: "s4", artistId: "a5", title: "Subwoofer Gospel", artistName: "BASSLINE PROPHET",
+                   durationSec: 176, previewSeed: "Subwoofer Gospel video", status: .premiere, scene: "Detroit",
+                   behindTheVideo: "Filmed inside a cathedral with a sound system that shook dust off the rafters.", reactions: 3_010),
+        MusicVideo(id: "mv-s2", songId: "s2", artistId: "a8", title: "Midnight Caracas", artistName: "Marisol Vega",
+                   durationSec: 211, previewSeed: "Midnight Caracas video", status: .classic, scene: "Miami",
+                   behindTheVideo: "A block-party shoot that turned into an actual block party.", reactions: 8_900),
+        MusicVideo(id: "mv-glitch2", songId: nil, artistId: "a7", title: "error404heart", artistName: "GLITCHCORE KID",
+                   durationSec: 133, previewSeed: "error404heart video", status: .underground, scene: "Chicago",
+                   behindTheVideo: "A webcam premiere streamed to 12 people. Now it's a cult clip.", reactions: 620),
+    ]
+
+    static func video(_ id: String) -> MusicVideo? { musicVideos.first { $0.id == id } }
+    static func videos(for artistId: String) -> [MusicVideo] { musicVideos.filter { $0.artistId == artistId } }
 }

@@ -27,6 +27,7 @@ struct ArtistProfileView: View {
                         statsRow
                         if artist.aiEnabled { aiBanner }
                         earningsBanner
+                        sleevesVideosBanner
                         tabPicker
                         tabContent
                     }
@@ -190,6 +191,30 @@ struct ArtistProfileView: View {
                     .clipShape(.rect(cornerRadius: 18))
             }
             .overlay(RoundedRectangle(cornerRadius: 18).stroke(VYBE.green.opacity(0.3), lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var sleevesVideosBanner: some View {
+        let sleeve = Mock.sleeves.first { $0.artistId == artistId }
+        let route: Route = sleeve.map { Route.sleeve($0.id) } ?? .vybeTV
+        return NavigationLink(value: route) {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle().fill(VYBE.holo).frame(width: 44, height: 44)
+                    Image(systemName: "rectangle.portrait.on.rectangle.portrait.angled.fill").font(.system(size: 18)).foregroundStyle(.white)
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Sleeves + Videos").font(.system(size: 15, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                    Text(sleeve != nil ? "Open the art, lyrics & liner notes · watch on VYBE TV" : "Watch this artist on VYBE TV")
+                        .font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineLimit(1)
+                }
+                Spacer()
+                Image(systemName: "chevron.right").foregroundStyle(VYBE.textTertiary)
+            }
+            .padding(14)
+            .background { ZStack { VYBE.card; HoloArt(seed: "sleevebanner\(artistId)").opacity(0.12) }.clipShape(.rect(cornerRadius: 18)) }
+            .overlay(RoundedRectangle(cornerRadius: 18).stroke(VYBE.purple.opacity(0.3), lineWidth: 1))
         }
         .buttonStyle(.plain)
     }
