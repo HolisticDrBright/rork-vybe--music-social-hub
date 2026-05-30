@@ -24,8 +24,10 @@ struct ProfileView: View {
                     header
                     VStack(spacing: 20) {
                         Group {
-                            // Artist tools (dashboard + Collab Lab) — always reachable in the prototype.
-                            dashboardLink
+                            roleSwitcher
+                            demoModeLink
+                            // Artist tools appear in Artist / Admin mode (flip with the switcher above).
+                            if app.role == .artist || app.role == .admin { dashboardLink }
                             cultureLinks
                             fanImpactSection
                             fundedArtistsSection
@@ -100,6 +102,53 @@ struct ProfileView: View {
                 Image(systemName: "chevron.right").font(.system(size: 12)).foregroundStyle(VYBE.textTertiary)
             }
             .padding(14).vybeCard(corner: 16)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var roleSwitcher: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                Image(systemName: "person.crop.circle.badge.checkmark").font(.system(size: 12, weight: .bold)).foregroundStyle(VYBE.cyan)
+                Text("MODE").font(.system(size: 11, weight: .heavy, design: .rounded)).tracking(1.5).foregroundStyle(VYBE.cyan)
+                Spacer()
+                Text(app.role.blurb).font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineLimit(1)
+            }
+            HStack(spacing: 8) {
+                ForEach(UserRole.allCases) { r in
+                    Button { app.setRole(r) } label: {
+                        HStack(spacing: 5) {
+                            Image(systemName: r.icon).font(.system(size: 11, weight: .bold))
+                            Text(r.rawValue).font(.system(size: 13, weight: .heavy, design: .rounded))
+                        }
+                        .foregroundStyle(app.role == r ? .white : VYBE.textSecondary)
+                        .frame(maxWidth: .infinity).padding(.vertical, 10)
+                        .background {
+                            if app.role == r { Capsule().fill(VYBE.holo).neonGlow(VYBE.purple, radius: 8) }
+                            else { Capsule().fill(.white.opacity(0.06)).overlay(Capsule().stroke(VYBE.stroke, lineWidth: 1)) }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .padding(14).vybeCard(corner: 18)
+    }
+
+    private var demoModeLink: some View {
+        NavigationLink(value: Route.demoMode) {
+            HStack(spacing: 12) {
+                ZStack { RoundedRectangle(cornerRadius: 14).fill(VYBE.holoSunset).frame(width: 44, height: 44)
+                    Image(systemName: "play.rectangle.on.rectangle.fill").font(.system(size: 18)).foregroundStyle(.white) }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Demo Mode").font(.system(size: 15, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                    Text("Investor walkthrough — jump into every key flow").font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineLimit(1)
+                }
+                Spacer(); Image(systemName: "chevron.right").foregroundStyle(VYBE.textTertiary)
+            }
+            .padding(14)
+            .background { ZStack { VYBE.card; HoloArt(seed: "demomode").opacity(0.14) }.clipShape(.rect(cornerRadius: 18)) }
+            .overlay(RoundedRectangle(cornerRadius: 18).stroke(VYBE.gold.opacity(0.3), lineWidth: 1))
         }
         .buttonStyle(.plain)
     }
@@ -355,12 +404,22 @@ struct ProfileView: View {
             .overlay(RoundedRectangle(cornerRadius: 12).stroke(color.opacity(0.3), lineWidth: 1))
     }
 
+    /// Badges with earned state merged from live app state (sleeve/collab/culture actions).
+    private var liveBadges: [Badge] {
+        Mock.badges.map { b in
+            var b = b
+            if app.hasBadge(b.name) { b.earned = true }
+            return b
+        }
+    }
+
     private var badgesSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SectionHeader(title: "Badges · \(earnedBadges.count)/\(Mock.badges.count)")
+        let earned = liveBadges.filter(\.earned).count
+        return VStack(alignment: .leading, spacing: 10) {
+            SectionHeader(title: "Badges · \(earned)/\(liveBadges.count)")
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
-                    ForEach(Mock.badges) { badge in BadgeView(badge: badge) }
+                    ForEach(liveBadges) { badge in BadgeView(badge: badge) }
                 }
             }
         }

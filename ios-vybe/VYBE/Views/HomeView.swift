@@ -52,6 +52,11 @@ struct HomeView: View {
                 HoloText(text: "VYBE", font: .system(size: 26, weight: .black, design: .rounded))
             }
             ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink(value: Route.demoMode) {
+                    Image(systemName: "play.rectangle.on.rectangle.fill").foregroundStyle(VYBE.gold)
+                }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
                 Image(systemName: "bell.badge.fill")
                     .foregroundStyle(VYBE.text)
                     .symbolRenderingMode(.palette)

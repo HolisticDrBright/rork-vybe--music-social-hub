@@ -44,6 +44,7 @@ struct DropCampaignView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
                         hero(c)
+                        if c.bornOnVYBE { BornOnVYBEBanner() }
                         goals(c)
                         ctas(c)
                         rewards(c)

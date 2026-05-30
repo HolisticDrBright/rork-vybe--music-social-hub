@@ -322,7 +322,7 @@ struct MoodHistoryEntry: Identifiable, Hashable {
 // MARK: - Collab Lab (artist-to-artist collaboration)
 
 /// The kind of collaboration an artist is opening up.
-enum CollabChallengeType: String, CaseIterable, Identifiable, Hashable {
+enum CollabChallengeType: String, CaseIterable, Identifiable, Hashable, Codable {
     case bestHook = "Best Hook"
     case openVerse = "Open Verse"
     case remixThis = "Remix This"
@@ -358,7 +358,7 @@ enum CollabChallengeType: String, CaseIterable, Identifiable, Hashable {
 }
 
 /// Lifecycle status of a collaboration challenge.
-enum CollabStatus: String, Hashable {
+enum CollabStatus: String, Hashable, Codable {
     case open = "Open"
     case reviewing = "Reviewing"
     case winnerPicked = "Winner Picked"
@@ -383,7 +383,7 @@ enum CollabStatus: String, Hashable {
 }
 
 /// Visibility scope for a challenge.
-enum CollabVisibility: String, CaseIterable, Identifiable, Hashable {
+enum CollabVisibility: String, CaseIterable, Identifiable, Hashable, Codable {
     case publicAll = "Public"
     case sceneOnly = "Scene-only"
     case inviteOnly = "Invite-only"
@@ -412,7 +412,7 @@ enum CollabRoleNeeded: String, CaseIterable, Identifiable, Hashable {
 }
 
 /// A submission's creative response type.
-enum SubmissionType: String, CaseIterable, Identifiable, Hashable {
+enum SubmissionType: String, CaseIterable, Identifiable, Hashable, Codable {
     case hook = "Hook"
     case verse = "Verse"
     case vocalIdea = "Vocal idea"
@@ -434,7 +434,7 @@ enum SubmissionType: String, CaseIterable, Identifiable, Hashable {
 }
 
 /// Lifecycle state of a single submission.
-enum SubmissionStatus: String, Hashable {
+enum SubmissionStatus: String, Hashable, Codable {
     case submitted = "Submitted"
     case shortlisted = "Shortlisted"
     case selected = "Winner"
@@ -451,7 +451,7 @@ enum SubmissionStatus: String, Hashable {
 }
 
 /// A posted collaboration challenge (beat / hook / loop / idea).
-struct CollabChallenge: Identifiable, Hashable {
+struct CollabChallenge: Identifiable, Hashable, Codable {
     let id: String
     var creatorArtistId: String
     var creatorName: String
@@ -477,7 +477,7 @@ struct CollabChallenge: Identifiable, Hashable {
 }
 
 /// A creative response submitted to a challenge.
-struct CollabSubmission: Identifiable, Hashable {
+struct CollabSubmission: Identifiable, Hashable, Codable {
     let id: String
     var challengeId: String
     var artistId: String
@@ -493,7 +493,7 @@ struct CollabSubmission: Identifiable, Hashable {
 }
 
 /// An upcoming release born from a Collab Lab challenge.
-struct UpcomingDrop: Identifiable, Hashable {
+struct UpcomingDrop: Identifiable, Hashable, Codable {
     let id: String
     var title: String
     var artistNames: [String]
@@ -505,13 +505,15 @@ struct UpcomingDrop: Identifiable, Hashable {
     var previewSeed: String
     var splitNote: String
     var releaseText: String
+    /// Drop Campaign this collab winner flows into (unified drop object).
+    var campaignId: String? = nil
 }
 
 
 // MARK: - Sleeves + Videos (album-worlds: art, lore, lyrics, music videos)
 
 /// Visual era/style of a sleeve.
-enum SleeveEra: String, CaseIterable, Identifiable, Hashable {
+enum SleeveEra: String, CaseIterable, Identifiable, Hashable, Codable {
     case vinyl70s = "70s Vinyl"
     case cd90s = "90s CD Booklet"
     case newAge = "New Age Cosmic"
@@ -554,28 +556,28 @@ enum SleeveEra: String, CaseIterable, Identifiable, Hashable {
 }
 
 /// One production / credit line.
-struct CreditLine: Identifiable, Hashable {
+struct CreditLine: Identifiable, Hashable, Codable {
     let id: String
     var role: String
     var name: String
 }
 
 /// A block of fictional, mock lyrics (never real copyrighted lyrics).
-struct LyricBlock: Identifiable, Hashable {
+struct LyricBlock: Identifiable, Hashable, Codable {
     let id: String
     var label: String      // "Verse 1", "Chorus", "Bridge"
     var lines: [String]
 }
 
 /// A "behind the song" story note.
-struct BehindSongNote: Identifiable, Hashable {
+struct BehindSongNote: Identifiable, Hashable, Codable {
     let id: String
     var heading: String
     var body: String
 }
 
 /// An extra inside-art / moodboard panel.
-struct SleevePanel: Identifiable, Hashable {
+struct SleevePanel: Identifiable, Hashable, Codable {
     let id: String
     var kind: String       // "art" or "note"
     var title: String
@@ -627,7 +629,7 @@ struct MusicVideo: Identifiable, Hashable {
 }
 
 /// The full interactive sleeve for a song / drop.
-struct SongSleeve: Identifiable, Hashable {
+struct SongSleeve: Identifiable, Hashable, Codable {
     let id: String
     var songId: String
     var artistId: String

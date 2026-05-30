@@ -22,6 +22,27 @@ struct BornOnVYBEBadge: View {
     }
 }
 
+/// Full-width "Born on VYBE" mythology banner for drop/premiere surfaces.
+struct BornOnVYBEBanner: View {
+    var subtitle: String = "This started here. Fans made it move."
+    var body: some View {
+        HStack(spacing: 12) {
+            ZStack {
+                Circle().fill(LinearGradient(colors: [VYBE.cyan, VYBE.blue], startPoint: .topLeading, endPoint: .bottomTrailing)).frame(width: 44, height: 44)
+                Image(systemName: "sparkles").font(.system(size: 18, weight: .bold)).foregroundStyle(.white)
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Born on VYBE").font(.system(size: 15, weight: .black, design: .rounded)).foregroundStyle(VYBE.text)
+                Text(subtitle).font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+            }
+            Spacer()
+        }
+        .padding(14)
+        .background { ZStack { VYBE.card; HoloArt(seed: "bornbanner").opacity(0.12) }.clipShape(.rect(cornerRadius: 18)) }
+        .overlay(RoundedRectangle(cornerRadius: 18).stroke(VYBE.cyan.opacity(0.3), lineWidth: 1))
+    }
+}
+
 // MARK: - Goal bar
 
 struct GoalBar: View {
@@ -261,6 +282,7 @@ struct CrewCard: View {
 struct MissionCard: View {
     @Environment(AppState.self) private var app
     let mission: ArtistMission
+    @State private var receipt: SupportReceipt? = nil
     private var live: ArtistMission { app.mission(mission.id) ?? mission }
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -280,7 +302,7 @@ struct MissionCard: View {
                 Text(live.reward).font(.system(size: 11, weight: .semibold)).foregroundStyle(VYBE.textSecondary)
                 Spacer()
             }
-            Button { app.contributeToMission(live.id) } label: {
+            Button { receipt = app.contributeToMission(live.id) } label: {
                 Text(live.pct >= 1 ? "Completed ✓" : "Help this mission")
                     .font(.system(size: 13, weight: .heavy, design: .rounded)).foregroundStyle(live.pct >= 1 ? VYBE.green : .white)
                     .frame(maxWidth: .infinity).padding(.vertical, 10)
@@ -290,6 +312,13 @@ struct MissionCard: View {
             .disabled(live.pct >= 1)
         }
         .padding(14).vybeCard(corner: 18)
+        .sheet(item: $receipt) { r in
+            NavigationStack {
+                SupportReceiptView(receipt: r)
+                    .toolbar { ToolbarItem(placement: .topBarLeading) { Button("Done") { receipt = nil }.foregroundStyle(VYBE.text) } }
+            }
+            .environment(app)
+        }
     }
 }
 

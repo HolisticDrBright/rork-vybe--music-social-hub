@@ -125,6 +125,14 @@ final class AppState {
     /// Culture badges ("First Heard It", "Early Discoverer", "Premiere Crew", "Crew Member").
     var cultureBadges: Set<String> = []
 
+    // --- Notification preferences (local prototype; real push needs a backend) ---
+    var notifyBeforeTheyBlow = false
+    var notifyPremieres = false
+
+    init() {
+        loadPersisted()
+    }
+
     // --- Haptic feedback helper ---
     func haptic(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
         UIImpactFeedbackGenerator(style: style).impactOccurred()
@@ -204,6 +212,143 @@ final class AppState {
 
     func addScore(_ pts: Int, reason: String = "") {
         withAnimation(.snappy) { vybeScore += pts }
+        persist()
+    }
+
+    // MARK: - Role
+
+    func setRole(_ r: UserRole) {
+        withAnimation(.snappy) { role = r }
+        haptic(.light)
+        persist()
+    }
+
+    /// Toggle local notification preferences. Real push needs a backend; this
+    /// schedules a local notification as the prototype stand-in.
+    func setNotify(beforeTheyBlow: Bool? = nil, premieres: Bool? = nil) {
+        if let b = beforeTheyBlow {
+            notifyBeforeTheyBlow = b
+            if b { NotificationService.scheduleBeforeTheyBlowDemo() }
+        }
+        if let p = premieres {
+            notifyPremieres = p
+            if p { NotificationService.schedulePremiereDemo() }
+        }
+        haptic(.light)
+        persist()
+    }
+
+    // MARK: - Local persistence (prototype: UserDefaults + Codable)
+
+    private static let storeKey = "vybe.persisted.v1"
+
+    /// Codable snapshot of mutable prototype state.
+    private struct PersistedState: Codable {
+        var role: String
+        var vybeScore: Int
+        var totalEarningsDriven: Int
+        var shareCount: Int
+        var referralCount: Int
+        var fanRank: Int
+        var savedSongs: Set<String>
+        var followedArtists: Set<String>
+        var discoveredArtists: Set<String>
+        var discoveredGenres: Set<String>
+        var joinedCrews: Set<String>
+        var supportedCampaigns: Set<String>
+        var submittedChallengeIds: Set<String>
+        var presavedDrops: Set<String>
+        var openedSleeves: Set<String>
+        var reactedSleeves: Set<String>
+        var watchedVideos: Set<String>
+        var cultureBadges: Set<String>
+        var sleeveBadges: Set<String>
+        var collabBadges: Set<String>
+        var fanRankByArtist: [String: Int]
+        var collabChallenges: [CollabChallenge]
+        var collabSubmissions: [CollabSubmission]
+        var upcomingDrops: [UpcomingDrop]
+        var dropCampaigns: [DropCampaign]
+        var artistMissions: [ArtistMission]
+        var customSleeves: [SongSleeve]
+        var notifyBeforeTheyBlow: Bool
+        var notifyPremieres: Bool
+    }
+
+    /// Snapshot + save (called from every mutating action via addScore and key mutators).
+    func persist() {
+        let snap = PersistedState(
+            role: role.rawValue, vybeScore: vybeScore, totalEarningsDriven: totalEarningsDriven,
+            shareCount: shareCount, referralCount: referralCount, fanRank: fanRank,
+            savedSongs: savedSongs, followedArtists: followedArtists,
+            discoveredArtists: discoveredArtists, discoveredGenres: discoveredGenres,
+            joinedCrews: joinedCrews, supportedCampaigns: supportedCampaigns,
+            submittedChallengeIds: submittedChallengeIds, presavedDrops: presavedDrops,
+            openedSleeves: openedSleeves, reactedSleeves: reactedSleeves, watchedVideos: watchedVideos,
+            cultureBadges: cultureBadges, sleeveBadges: sleeveBadges, collabBadges: collabBadges,
+            fanRankByArtist: fanRankByArtist,
+            collabChallenges: collabChallenges, collabSubmissions: collabSubmissions,
+            upcomingDrops: upcomingDrops, dropCampaigns: dropCampaigns,
+            artistMissions: artistMissions, customSleeves: customSleeves,
+            notifyBeforeTheyBlow: notifyBeforeTheyBlow, notifyPremieres: notifyPremieres)
+        if let data = try? JSONEncoder().encode(snap) {
+            UserDefaults.standard.set(data, forKey: Self.storeKey)
+        }
+    }
+
+    /// Load persisted state on launch; missing/incompatible data falls back to mock defaults.
+    private func loadPersisted() {
+        guard let data = UserDefaults.standard.data(forKey: Self.storeKey),
+              let s = try? JSONDecoder().decode(PersistedState.self, from: data) else { return }
+        role = UserRole(rawValue: s.role) ?? .fan
+        vybeScore = s.vybeScore
+        totalEarningsDriven = s.totalEarningsDriven
+        shareCount = s.shareCount
+        referralCount = s.referralCount
+        fanRank = s.fanRank
+        savedSongs = s.savedSongs
+        followedArtists = s.followedArtists
+        discoveredArtists = s.discoveredArtists
+        discoveredGenres = s.discoveredGenres
+        joinedCrews = s.joinedCrews
+        supportedCampaigns = s.supportedCampaigns
+        submittedChallengeIds = s.submittedChallengeIds
+        presavedDrops = s.presavedDrops
+        openedSleeves = s.openedSleeves
+        reactedSleeves = s.reactedSleeves
+        watchedVideos = s.watchedVideos
+        cultureBadges = s.cultureBadges
+        sleeveBadges = s.sleeveBadges
+        collabBadges = s.collabBadges
+        fanRankByArtist = s.fanRankByArtist
+        if !s.collabChallenges.isEmpty { collabChallenges = s.collabChallenges }
+        if !s.collabSubmissions.isEmpty { collabSubmissions = s.collabSubmissions }
+        if !s.upcomingDrops.isEmpty { upcomingDrops = s.upcomingDrops }
+        if !s.dropCampaigns.isEmpty { dropCampaigns = s.dropCampaigns }
+        if !s.artistMissions.isEmpty { artistMissions = s.artistMissions }
+        customSleeves = s.customSleeves
+        notifyBeforeTheyBlow = s.notifyBeforeTheyBlow
+        notifyPremieres = s.notifyPremieres
+    }
+
+    /// Reset all prototype progress (used by demo mode).
+    func resetPrototype() {
+        UserDefaults.standard.removeObject(forKey: Self.storeKey)
+    }
+
+    /// Whether a named status badge has been earned (drives the badge grids).
+    func hasBadge(_ name: String) -> Bool {
+        let all = cultureBadges.union(sleeveBadges).union(collabBadges)
+        if all.contains(name) { return true }
+        switch name {
+        case "Early Discoverer": return !discoveredArtists.isEmpty
+        case "First Heard It": return !supportedCampaigns.isEmpty || !presavedDrops.isEmpty
+        case "First Opened It": return !openedSleeves.isEmpty
+        case "Sleeve Collector": return openedSleeves.count >= 3
+        case "Video Premiere Crew": return cultureBadges.contains("Premiere Crew") || !watchedVideos.isEmpty
+        case "Collab Scout": return !joinedCrews.isEmpty
+        default: return false
+        }
     }
 
     // MARK: - Canonical support engine
@@ -262,6 +407,7 @@ final class AppState {
             newRank: newRank, songTitle: songTitle, badge: badge)
         receiptHistory.append(receipt)
         hapticSuccess()
+        persist()
         return receipt
     }
 
@@ -314,14 +460,17 @@ final class AppState {
             sub.status = (sub.status == .shortlisted) ? .submitted : .shortlisted
         }
         haptic(.light)
+        persist()
     }
     func reactToSubmission(_ submissionId: String) {
         updateSubmission(submissionId) { $0.reactions += 1 }
         haptic(.light)
+        persist()
     }
     func declineSubmission(_ submissionId: String) {
         updateSubmission(submissionId) { $0.status = .declined }
         haptic(.light)
+        persist()
     }
 
     /// Pick a winner: converts the challenge into an Upcoming Drop and returns it.
@@ -337,8 +486,10 @@ final class AppState {
         let creator = challenge?.creatorName ?? "You"
         let collaborator = winner?.artistName ?? "Featured Artist"
         let beat = challenge?.beatTitle ?? "Untitled"
-        let drop = UpcomingDrop(
-            id: "ud-\(challengeId)-\(Int(Date().timeIntervalSince1970))",
+        let stamp = Int(Date().timeIntervalSince1970)
+        let campaignId = "dc-collab-\(challengeId)-\(stamp)"
+        var drop = UpcomingDrop(
+            id: "ud-\(challengeId)-\(stamp)",
             title: "\(beat) (feat. \(collaborator))",
             artistNames: [creator, collaborator],
             originChallengeId: challengeId,
@@ -349,25 +500,44 @@ final class AppState {
             previewSeed: challenge?.previewSeed ?? beat,
             splitNote: challenge?.proposedSplit ?? "50/50 (placeholder)",
             releaseText: "Upcoming")
+        drop.campaignId = campaignId
+
+        // Unified drop object: the collab winner also flows into a Drop Campaign
+        // (+ a VYBE TV premiere via the collab video) so the moment carries through.
+        let campaign = DropCampaign(
+            id: campaignId, artistId: challenge?.creatorArtistId ?? collabArtistId, artistName: creator,
+            title: "\(beat) (feat. \(collaborator))",
+            subtitle: "Born on VYBE — \(creator) × \(collaborator).",
+            status: .upcoming, countdownText: "Just started · help it break",
+            coverSeed: challenge?.previewSeed ?? beat, videoId: "mv-collab",
+            supportGoalUSD: 1_000, raisedUSD: 0, boostGoal: 500, boosts: 0,
+            presaveGoal: 150, presaves: 0, earningsGoalUSD: 900, missionIds: [],
+            rewards: ["First Heard It badge", "Name in the credits", "Early demo unlock"],
+            bornOnVYBE: true)
+
         withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
             upcomingDrops.insert(drop, at: 0)
+            dropCampaigns.insert(campaign, at: 0)
         }
+        cultureBadges.insert("Collab Scout")
         addScore(500, reason: "Started a collab")
         hapticSuccess()
+        persist()
         return drop
     }
 
-    /// Fan pre-saves / supports an upcoming collab drop early.
-    func presaveDrop(_ dropId: String) {
-        guard !presavedDrops.contains(dropId) else { return }
+    /// Fan pre-saves / supports an upcoming collab drop early — produces a receipt.
+    @discardableResult
+    func presaveDrop(_ dropId: String) -> SupportReceipt? {
+        guard let i = upcomingDrops.firstIndex(where: { $0.id == dropId }) else { return nil }
+        let drop = upcomingDrops[i]
+        let alreadyPresaved = presavedDrops.contains(dropId)
         presavedDrops.insert(dropId)
-        if let i = upcomingDrops.firstIndex(where: { $0.id == dropId }) {
-            upcomingDrops[i].earlySupporters += 1
-        }
+        if !alreadyPresaved { upcomingDrops[i].earlySupporters += 1 }
         collabBadges.insert("First Heard It")
         collabBadges.insert("Collab Scout")
-        addScore(180, reason: "Pre-saved a collab drop early")
-        hapticSuccess()
+        let artist = Mock.artists.first { drop.artistNames.contains($0.name) } ?? Mock.artist("a1")
+        return recordSupport(.buyDrop(8), artist: artist, songTitle: drop.title, badge: "First Heard It — backed it early")
     }
 
     // MARK: - Sleeves + Videos
@@ -400,6 +570,7 @@ final class AppState {
         if video.status == .premiere { sleeveBadges.insert("Video Premiere Crew") }
         if firstWatch { addScore(25, reason: "Watched a video") }
         hapticSuccess()
+        persist()
     }
 
     /// Support a drop from inside a sleeve — bigger score + Sleeve Collector progress.
@@ -452,15 +623,27 @@ final class AppState {
     }
 
     /// Contribute to an artist growth mission — advances progress + VYBE Score.
-    func contributeToMission(_ id: String) {
-        guard let i = artistMissions.firstIndex(where: { $0.id == id }) else { return }
+    /// Returns a support receipt when the contribution completes the mission.
+    @discardableResult
+    func contributeToMission(_ id: String) -> SupportReceipt? {
+        guard let i = artistMissions.firstIndex(where: { $0.id == id }) else { return nil }
         let step = max(1, artistMissions[i].goal / 12)
+        let wasComplete = artistMissions[i].progress >= artistMissions[i].goal
         withAnimation(.snappy) {
             artistMissions[i].progress = min(artistMissions[i].goal, artistMissions[i].progress + step)
         }
         contributedMissions.insert(id)
-        addScore(max(50, artistMissions[i].points / 5), reason: "Helped a mission")
+        let mission = artistMissions[i]
+        let nowComplete = mission.progress >= mission.goal
+        if nowComplete && !wasComplete {
+            // Mission completed → a support receipt moment.
+            cultureBadges.insert("First Heard It")
+            let artist = Mock.artist(mission.artistId)
+            return recordSupport(.challenge(mission.points), artist: artist, songTitle: mission.title, badge: "Mission complete: \(mission.reward)")
+        }
+        addScore(max(50, mission.points / 5), reason: "Helped a mission")
         hapticSuccess()
+        return nil
     }
 
     /// Back a "Before They Blow" artist early — Early Discoverer + First Heard It.
@@ -482,10 +665,12 @@ final class AppState {
             joinedCrews.remove(id)
         } else {
             joinedCrews.insert(id)
+            cultureBadges.insert("Collab Scout")
             cultureBadges.insert("Crew Member")
             addScore(120, reason: "Joined a fan crew")
             hapticSuccess()
         }
+        persist()
     }
 
     /// Support / react during a video premiere — earns Premiere Crew.

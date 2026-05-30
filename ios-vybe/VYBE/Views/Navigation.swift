@@ -44,6 +44,7 @@ enum Route: Hashable {
     case fanTimeline            // Fan Investment Timeline
     case musicDNA               // Music DNA / Taste Graph
     case premiere(String)       // VYBE TV video premiere
+    case demoMode               // Investor walkthrough / demo menu
 }
 
 extension View {
@@ -86,6 +87,7 @@ extension View {
             case .fanTimeline: FanInvestmentTimelineView()
             case .musicDNA: MusicDNAView()
             case .premiere(let id): PremiereView(premiereId: id)
+            case .demoMode: DemoModeView()
             }
         }
     }

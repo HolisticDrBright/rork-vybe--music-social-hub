@@ -337,6 +337,8 @@ enum Mock {
         Badge(id: "b11", name: "First Opened It", icon: "rectangle.portrait.on.rectangle.portrait.angled.fill", desc: "Opened a song's sleeve", earned: false),
         Badge(id: "b12", name: "Sleeve Collector", icon: "rectangle.stack.fill", desc: "Opened & supported 3+ sleeves", earned: false),
         Badge(id: "b13", name: "Video Premiere Crew", icon: "play.tv.fill", desc: "Caught a video premiere on VYBE TV", earned: false),
+        Badge(id: "b14", name: "First Heard It", icon: "bolt.heart.fill", desc: "Backed a drop before it broke", earned: false),
+        Badge(id: "b15", name: "Collab Scout", icon: "person.2.wave.2.fill", desc: "Joined a crew or backed a collab", earned: false),
     ]
 
     // MARK: - Rewards

@@ -16,6 +16,10 @@ struct SettingsView: View {
             VYBE.bg.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 22) {
+                    // Mode (Fan / Artist / Admin)
+                    modeSection
+                    // Notifications
+                    notificationsSection
                     // Fan-first values
                     valuesSection
                     // Account
@@ -33,6 +37,62 @@ struct SettingsView: View {
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showGuidelines) { GuidelinesSheet() }
+    }
+
+    // MARK: - Mode
+
+    private var modeSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(title: "Mode").padding(.horizontal, 4)
+            Text("Switch between fan and artist experiences. Artist Mode unlocks the Dashboard, Collab Lab, Sleeve Builder, Drop Campaigns, and Need Board.")
+                .font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary).padding(.horizontal, 4)
+            HStack(spacing: 8) {
+                ForEach(UserRole.allCases) { r in
+                    Button { app.setRole(r) } label: {
+                        VStack(spacing: 6) {
+                            Image(systemName: r.icon).font(.system(size: 18, weight: .bold))
+                            Text(r.rawValue).font(.system(size: 13, weight: .heavy, design: .rounded))
+                        }
+                        .foregroundStyle(app.role == r ? .white : VYBE.textSecondary)
+                        .frame(maxWidth: .infinity).padding(.vertical, 14)
+                        .background {
+                            if app.role == r { RoundedRectangle(cornerRadius: 14).fill(VYBE.holo).neonGlow(VYBE.purple, radius: 8) }
+                            else { RoundedRectangle(cornerRadius: 14).fill(.white.opacity(0.06)).overlay(RoundedRectangle(cornerRadius: 14).stroke(VYBE.stroke, lineWidth: 1)) }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .padding(16).vybeCard(corner: 20)
+    }
+
+    // MARK: - Notifications
+
+    private var notificationsSection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            SectionHeader(title: "Notifications").padding(.horizontal, 4).padding(.bottom, 4)
+            Toggle(isOn: Binding(get: { app.notifyBeforeTheyBlow }, set: { app.setNotify(beforeTheyBlow: $0) })) {
+                notifyLabel("waveform.path.ecg", "Before They Blow alerts", "Get pinged when a rising artist starts to move", VYBE.gold)
+            }.tint(VYBE.magenta)
+            settingsDivider
+            Toggle(isOn: Binding(get: { app.notifyPremieres }, set: { app.setNotify(premieres: $0) })) {
+                notifyLabel("play.tv.fill", "Premiere reminders", "Countdown pings for VYBE TV premieres", VYBE.purple)
+            }.tint(VYBE.magenta)
+            Text("Prototype uses local notifications. Real push requires a backend.")
+                .font(.system(size: 10, weight: .medium)).foregroundStyle(VYBE.textTertiary).padding(.top, 6).padding(.horizontal, 4)
+        }
+        .padding(16).vybeCard(corner: 20)
+    }
+
+    private func notifyLabel(_ icon: String, _ title: String, _ sub: String, _ color: Color) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon).font(.system(size: 16)).foregroundStyle(color).frame(width: 24)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title).font(.system(size: 14, weight: .bold)).foregroundStyle(VYBE.text)
+                Text(sub).font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+            }
+        }
     }
 
     // MARK: - Fan-First Values

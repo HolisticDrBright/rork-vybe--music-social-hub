@@ -12,7 +12,7 @@ import SwiftUI
 
 // MARK: - Drop Campaigns
 
-enum DropStatus: String, Hashable {
+enum DropStatus: String, Hashable, Codable {
     case upcoming = "Upcoming"
     case live = "Live Now"
     case funded = "Funded"
@@ -36,7 +36,7 @@ enum DropStatus: String, Hashable {
     }
 }
 
-struct DropCampaign: Identifiable, Hashable {
+struct DropCampaign: Identifiable, Hashable, Codable {
     let id: String
     var artistId: String
     var artistName: String
@@ -84,7 +84,7 @@ struct FanInvestment: Identifiable, Hashable {
 
 // MARK: - Artist Growth Missions
 
-enum MissionType: String, Hashable {
+enum MissionType: String, Hashable, Codable {
     case tickets, boosts, bringFans, unlockDrop, sharePremiere, voteSleeve, findVocalist, trendCollab
     var icon: String {
         switch self {
@@ -112,7 +112,7 @@ enum MissionType: String, Hashable {
     }
 }
 
-struct ArtistMission: Identifiable, Hashable {
+struct ArtistMission: Identifiable, Hashable, Codable {
     let id: String
     var artistId: String
     var artistName: String

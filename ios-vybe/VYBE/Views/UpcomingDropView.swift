@@ -11,6 +11,7 @@ import SwiftUI
 struct UpcomingDropView: View {
     @Environment(AppState.self) private var app
     let dropId: String
+    @State private var receipt: SupportReceipt? = nil
 
     private var drop: UpcomingDrop? { app.upcomingDrops.first { $0.id == dropId } }
     private var presaved: Bool { app.presavedDrops.contains(dropId) }
@@ -23,7 +24,23 @@ struct UpcomingDropView: View {
                 ScrollView {
                     VStack(spacing: 20) {
                         hero(drop)
+                        if drop.bornOnVYBE { BornOnVYBEBanner() }
                         originCard(drop)
+                        if let cid = drop.campaignId, app.dropCampaign(cid) != nil {
+                            NavigationLink(value: Route.dropCampaign(cid)) {
+                                HStack(spacing: 12) {
+                                    Image(systemName: "flame.fill").font(.system(size: 16)).foregroundStyle(.white)
+                                        .frame(width: 40, height: 40).background(VYBE.holoSunset, in: .circle)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("Open the full Drop Campaign").font(.system(size: 14, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                                        Text("Goals · missions · leaderboard · premiere").font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+                                    }
+                                    Spacer(); Image(systemName: "chevron.right").foregroundStyle(VYBE.textTertiary)
+                                }
+                                .padding(14).vybeCard(corner: 18)
+                            }
+                            .buttonStyle(.plain)
+                        }
                         Text(drop.description)
                             .font(.system(size: 14, weight: .medium)).foregroundStyle(VYBE.textSecondary)
                             .multilineTextAlignment(.center).lineSpacing(4).padding(.horizontal, 8)
@@ -42,6 +59,13 @@ struct UpcomingDropView: View {
         }
         .navigationTitle("Upcoming Drop")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(item: $receipt) { r in
+            NavigationStack {
+                SupportReceiptView(receipt: r)
+                    .toolbar { ToolbarItem(placement: .topBarLeading) { Button("Done") { receipt = nil }.foregroundStyle(VYBE.text) } }
+            }
+            .environment(app)
+        }
         .vybeDestinations()
     }
 
@@ -101,7 +125,7 @@ struct UpcomingDropView: View {
                     .font(.system(size: 12, weight: .bold)).foregroundStyle(VYBE.green)
                     .contentTransition(.numericText())
             }
-            Button { if !presaved { app.presaveDrop(dropId) } } label: {
+            Button { receipt = app.presaveDrop(dropId) } label: {
                 HStack(spacing: 8) {
                     Image(systemName: presaved ? "checkmark.circle.fill" : "bookmark.fill").font(.system(size: 15, weight: .bold))
                     Text(presaved ? "Pre-saved · First Heard It earned" : "Pre-save & support early")
