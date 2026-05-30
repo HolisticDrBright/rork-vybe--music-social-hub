@@ -1,0 +1,10 @@
+{
+  "apps": [
+    {
+      "name": "VYBE",
+      "path": "ios-vybe",
+      "framework": "swift"
+    }
+  ],
+  "$schema": "https://rork.com/schema/rork.json"
+}
