@@ -44,6 +44,9 @@ struct SleeveDetailView: View {
         }
         .navigationTitle("Sleeve")
         .navigationBarTitleDisplayMode(.inline)
+        // NOTE: three independent sheets — valid on iOS 16+/18 (separate bindings,
+        // mutually exclusive). Consolidate into one enum-driven `.sheet(item:)` if a
+        // sheet ever fails to present on an older OS.
         .sheet(item: $playingVideo) { VideoPlayerSheet(video: $0).environment(app) }
         .sheet(isPresented: $showLyricShare) {
             if let s = sleeve { LyricShareSheet(sleeve: s, lines: shareLines(s)).environment(app) }

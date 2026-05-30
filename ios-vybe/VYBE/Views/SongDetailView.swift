@@ -50,6 +50,10 @@ struct SongDetailView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
+        // NOTE: three independent sheets. Fine on iOS 16+/18 (each presents from its
+        // own binding and they're mutually exclusive in practice). If a sheet ever
+        // fails to present on an older OS, consolidate into one enum-driven
+        // `.sheet(item:)` (e.g. `enum ActiveSheet { case share, video(MusicVideo), receipt(SupportReceipt) }`).
         .sheet(isPresented: $showShareSheet) { ShareSheet(song: song) }
         .sheet(item: $playingVideo) { VideoPlayerSheet(video: $0).environment(app) }
         .sheet(item: $receipt) { r in
