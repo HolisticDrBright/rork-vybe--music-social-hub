@@ -84,6 +84,12 @@ final class AppState {
     // --- Support receipt history ---
     var receiptHistory: [SupportReceipt] = []
 
+    // --- Discovery (#17 "Unknowns Like Your Favorites") ---
+    /// Artists the fan personally discovered & supported via Hidden Gems.
+    var discoveredArtists: Set<String> = []
+    /// Genres surfaced through discovery — feeds the "Music Personality" section.
+    var discoveredGenres: Set<String> = []
+
     // --- Haptic feedback helper ---
     func haptic(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
         UIImpactFeedbackGenerator(style: style).impactOccurred()
@@ -327,6 +333,43 @@ final class AppState {
         let artist = Mock.artist(song.artistId)
         let receipt = Mock.generateReceipt(for: artist, action: "Discovered via Vibe Check: \(song.title)", score: bonus, streams: 500)
         receiptHistory.append(receipt)
+    }
+
+    // MARK: - Discovery Actions
+
+    /// Support an artist surfaced by the "Hidden Gems" engine. Grants the Early
+    /// Discoverer bonus, tags the artist "Discovered by you", updates the fan's
+    /// Music Personality, and returns a shareable Support Receipt for the moment.
+    @discardableResult
+    func supportDiscovery(_ artist: Artist) -> SupportReceipt {
+        followedArtists.insert(artist.id)
+        discoveredArtists.insert(artist.id)
+        discoveredGenres.insert(artist.genre)
+
+        // The more obscure the artist, the bigger the Early Discoverer bonus.
+        let bonus: Int
+        switch artist.popularityTier {
+        case "undiscovered": bonus = 300
+        case "underground": bonus = 200
+        default: bonus = 120
+        }
+        let streams = Int.random(in: 200...900)
+        streamsGenerated += streams
+        totalEarningsDriven += Int(Double(streams) * 0.12) + 8
+        shareCount += 1
+        viralImpact = min(100, viralImpact + 2)
+        artistLiveEarnings += Int(Double(streams) * 0.12) + 8
+
+        addScore(bonus, reason: "Early Discoverer: \(artist.name)")
+        hapticSuccess()
+
+        let receipt = Mock.generateReceipt(
+            for: artist,
+            action: "Discovered \(artist.name) before everyone",
+            score: bonus,
+            streams: streams)
+        receiptHistory.append(receipt)
+        return receipt
     }
 
     /// Simulate the full support action in the loop

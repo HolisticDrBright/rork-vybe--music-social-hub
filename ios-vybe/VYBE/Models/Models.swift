@@ -43,6 +43,72 @@ struct Artist: Identifiable, Hashable {
     var tags: [String]
     /// Mock personality for the AI twin.
     var aiPersona: String
+
+    // MARK: - Discovery engine sonic profile (#17 "Unknowns Like Your Favorites")
+    /// Finer-grained genre tags used for content similarity.
+    var subgenres: [String] = []
+    /// Emotional descriptors (e.g. "Dreamy", "Euphoric").
+    var moodTags: [String] = []
+    /// Production / texture descriptors (e.g. "reverb-drenched", "heavy bass").
+    var sonicTags: [String] = []
+    /// Overall energy 0–100.
+    var energy: Int = 50
+    /// 1–2 famous taste-anchor artists this act sounds like.
+    var soundsLike: [String] = []
+    /// Direct fan-funded earnings this month (discovery signal).
+    var fanFundedMonthlyUSD: Int = 0
+    /// What the same activity would have earned on streaming (~$0.004/stream).
+    var streamingEquivUSD: Int = 0
+    /// "undiscovered" (<5k) / "underground" (5k–50k) / "rising" (50k–260k) / "established".
+    var popularityTier: String = "established"
+
+    /// Convenience: vector used by the discovery engine.
+    var sonicVector: SonicVector {
+        SonicVector(displayName: name, genre: genre, subgenres: subgenres,
+                    sonicTags: sonicTags, moodTags: moodTags, energy: energy)
+    }
+}
+
+/// A famous taste-reference point (not a navigable profile) used to anchor discovery.
+struct AnchorArtist: Identifiable, Hashable {
+    let id: String
+    var name: String
+    var genre: String
+    var subgenres: [String]
+    var sonicTags: [String]
+    var moodTags: [String]
+    var energy: Int
+
+    var sonicVector: SonicVector {
+        SonicVector(displayName: name, genre: genre, subgenres: subgenres,
+                    sonicTags: sonicTags, moodTags: moodTags, energy: energy)
+    }
+}
+
+/// A lightweight content-similarity vector shared by artists and anchors.
+struct SonicVector: Hashable {
+    var displayName: String
+    var genre: String
+    var subgenres: [String]
+    var sonicTags: [String]
+    var moodTags: [String]
+    var energy: Int
+}
+
+/// One explainable "Hidden Gem" recommendation produced by the discovery engine.
+struct DiscoveryResult: Identifiable, Hashable {
+    var id: String { artist.id }
+    let artist: Artist
+    /// The favorite/anchor this result was matched against ("If you love …").
+    let anchorName: String
+    /// Raw content similarity 0–1 (before underground boost).
+    let similarity: Double
+    /// Final ranking score after the underground boost.
+    let finalScore: Double
+    /// True if this slot is a taste-expansion wildcard.
+    let isWildcard: Bool
+    /// Optional social-proof line ("fans who love X also support Y").
+    let socialSignal: String?
 }
 
 struct Song: Identifiable, Hashable {

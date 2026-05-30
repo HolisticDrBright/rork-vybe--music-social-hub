@@ -14,6 +14,7 @@ struct ProfileView: View {
     private var earnedBadges: [Badge] { Mock.badges.filter { $0.earned } }
     private var savedSongs: [Song] { Mock.songs.filter { app.savedSongs.contains($0.id) } }
     private var topArtists: [Artist] { Mock.artists.filter { app.followedArtists.contains($0.id) } }
+    private var discoveredArtistsList: [Artist] { Mock.artists.filter { app.discoveredArtists.contains($0.id) } }
 
     var body: some View {
         ZStack {
@@ -24,6 +25,7 @@ struct ProfileView: View {
                     VStack(spacing: 20) {
                         if app.role == .artist || app.role == .admin { dashboardLink }
                         fundedArtistsSection
+                        discoveredSection
                         personality
                         badgesSection
                         topArtistsSection
@@ -139,6 +141,72 @@ struct ProfileView: View {
         }
     }
 
+    // MARK: - Discovered by You (#17)
+
+    private var discoveredSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .firstTextBaseline) {
+                SectionHeader(title: "Discovered by You")
+                NavigationLink(value: Route.hiddenGems) {
+                    HStack(spacing: 3) {
+                        Image(systemName: "sparkle.magnifyingglass").font(.system(size: 11, weight: .bold))
+                        Text("Find gems").font(.system(size: 13, weight: .bold))
+                    }
+                    .foregroundStyle(VYBE.cyan)
+                }
+                .buttonStyle(.plain)
+            }
+
+            if discoveredArtistsList.isEmpty {
+                NavigationLink(value: Route.hiddenGems) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "sparkle.magnifyingglass")
+                            .font(.system(size: 18, weight: .bold)).foregroundStyle(.white)
+                            .frame(width: 44, height: 44).background(VYBE.holo, in: .circle)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Discover unknowns like your favorites")
+                                .font(.system(size: 14, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                            Text("Support an artist early — make their rise your story.")
+                                .font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right").foregroundStyle(VYBE.textTertiary)
+                    }
+                    .padding(14).vybeCard(corner: 18)
+                }
+                .buttonStyle(.plain)
+            } else {
+                ForEach(discoveredArtistsList) { artist in
+                    NavigationLink(value: Route.artist(artist.id)) {
+                        HStack(spacing: 12) {
+                            AvatarView(seed: artist.name, size: 44)
+                            VStack(alignment: .leading, spacing: 2) {
+                                HStack(spacing: 4) {
+                                    Text(artist.name).font(.system(size: 14, weight: .bold)).foregroundStyle(VYBE.text)
+                                    if artist.isVerified { VerifiedBadge(size: 11) }
+                                }
+                                HStack(spacing: 8) {
+                                    Label("Early Discoverer", systemImage: "sparkle.magnifyingglass")
+                                        .font(.system(size: 11, weight: .bold)).foregroundStyle(VYBE.green)
+                                    Text("\(artist.monthlyListeners.compact) listeners")
+                                        .font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+                                }
+                                if artist.isUndergroundRising {
+                                    Text("📈 On the rise — your early call is paying off")
+                                        .font(.system(size: 10, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.gold)
+                                }
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right").foregroundStyle(VYBE.textTertiary).font(.system(size: 12))
+                        }
+                        .padding(12).vybeCard(corner: 14)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
     private var personality: some View {
         VStack(alignment: .leading, spacing: 10) {
             SectionHeader(title: "Music Personality")
@@ -150,10 +218,17 @@ struct ProfileView: View {
                 personalityChip("Underground Scout", VYBE.green)
                 personalityChip("Night Owl", VYBE.purple)
             }
-            Text("Top genres: Hyperpop · Dream Pop · Afro-House")
+            Text("Top genres: \(personalityGenres)")
                 .font(.system(size: 12, weight: .semibold)).foregroundStyle(VYBE.textSecondary).padding(.top, 2)
         }
         .padding(16).vybeCard(corner: 20)
+    }
+
+    /// Blend default taste with genres surfaced through discovery.
+    private var personalityGenres: String {
+        var genres = ["Hyperpop", "Dream Pop", "Afro-House"]
+        for g in app.discoveredGenres where !genres.contains(g) { genres.append(g) }
+        return genres.prefix(5).joined(separator: " · ")
     }
 
     private func personalityChip(_ text: String, _ color: Color) -> some View {

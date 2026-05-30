@@ -22,6 +22,7 @@ enum Route: Hashable {
     case report(String)          // ReportView with content id
     case vybeLoop               // Guided VYBE Loop demo
     case vibeCheck              // Vibe Check emotion-based discovery
+    case hiddenGems             // "Unknowns Like Your Favorites" discovery engine
 }
 
 extension View {
@@ -43,6 +44,7 @@ extension View {
             case .report(let id): ReportView(contentId: id)
             case .vybeLoop: VYBELoopView()
             case .vibeCheck: VibeCheckView()
+            case .hiddenGems: HiddenGemsView()
             }
         }
     }

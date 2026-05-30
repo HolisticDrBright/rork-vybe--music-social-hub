@@ -8,48 +8,86 @@
 import SwiftUI
 
 enum Mock {
-    static let artists: [Artist] = [
+    /// The hand-authored "hero" artists used throughout the demo flows.
+    static let featuredArtists: [Artist] = [
         Artist(id: "a1", name: "NOVA REIGN", handle: "@novareign", genre: "Hyperpop", city: "Los Angeles",
                bio: "Genre-bending hyperpop visionary. Lights, lasers, and lyrics that hit different.",
                monthlyListeners: 2_840_000, followers: 1_210_000, isVerified: true, aiEnabled: true,
                isUndergroundRising: false, tags: ["Hyperpop", "Electronic", "Pop"],
-               aiPersona: "Bold, playful, neon-obsessed. Loves talking about studio experiments and crowd energy."),
+               aiPersona: "Bold, playful, neon-obsessed. Loves talking about studio experiments and crowd energy.",
+               subgenres: ["Electropop", "Glitch Pop"], moodTags: ["Euphoric", "Hype", "Chaotic"],
+               sonicTags: ["maximalist", "autotuned", "synthetic", "explosive"], energy: 92,
+               soundsLike: ["Charli XCX", "SOPHIE"], fanFundedMonthlyUSD: 281_700, streamingEquivUSD: 16_500,
+               popularityTier: "established"),
         Artist(id: "a2", name: "Kairo Sol", handle: "@kairosol", genre: "Afro-House", city: "Brooklyn",
                bio: "Brooklyn-based producer fusing Afro-house with late-night soul.",
                monthlyListeners: 980_000, followers: 420_000, isVerified: true, aiEnabled: true,
                isUndergroundRising: false, tags: ["Afro-House", "Soul", "Dance"],
-               aiPersona: "Warm, philosophical, rhythm-first. Speaks about heritage, groove, and connection."),
+               aiPersona: "Warm, philosophical, rhythm-first. Speaks about heritage, groove, and connection.",
+               subgenres: ["Amapiano", "Deep House"], moodTags: ["Groovy", "Flowing", "Euphoric"],
+               sonicTags: ["percussive", "hypnotic", "soulful", "log-drum"], energy: 74,
+               soundsLike: ["Black Coffee", "Bonobo"], fanFundedMonthlyUSD: 69_200, streamingEquivUSD: 3_900,
+               popularityTier: "established"),
         Artist(id: "a3", name: "Velvet Static", handle: "@velvetstatic", genre: "Indie Rock", city: "Austin",
                bio: "Fuzzed-out indie rock with a heart of static and gold.",
                monthlyListeners: 410_000, followers: 188_000, isVerified: true, aiEnabled: false,
                isUndergroundRising: true, tags: ["Indie", "Rock", "Shoegaze"],
-               aiPersona: "Dry humor, introspective. Talks gear, garages, and emotional honesty."),
+               aiPersona: "Dry humor, introspective. Talks gear, garages, and emotional honesty.",
+               subgenres: ["Shoegaze", "Garage Rock"], moodTags: ["Nostalgic", "Moody", "Inspired"],
+               sonicTags: ["fuzzy guitars", "reverb-drenched", "lo-fi", "analog warmth"], energy: 60,
+               soundsLike: ["Tame Impala", "DIIV"], fanFundedMonthlyUSD: 30_800, streamingEquivUSD: 1_640,
+               popularityTier: "established"),
         Artist(id: "a4", name: "LUNA TIDE", handle: "@lunatide", genre: "Dream Pop", city: "Portland",
                bio: "Ethereal dream pop washed in reverb and moonlight.",
                monthlyListeners: 220_000, followers: 96_000, isVerified: false, aiEnabled: true,
                isUndergroundRising: true, tags: ["Dream Pop", "Ambient"],
-               aiPersona: "Soft-spoken, poetic, dreamy. Loves imagery, oceans, and quiet inspiration."),
+               aiPersona: "Soft-spoken, poetic, dreamy. Loves imagery, oceans, and quiet inspiration.",
+               subgenres: ["Ambient Pop", "Shoegaze"], moodTags: ["Dreamy", "Calm", "Nostalgic"],
+               sonicTags: ["reverb-drenched", "ethereal", "hazy", "lush"], energy: 34,
+               soundsLike: ["Beach House", "Cocteau Twins"], fanFundedMonthlyUSD: 27_100, streamingEquivUSD: 880,
+               popularityTier: "rising"),
         Artist(id: "a5", name: "BASSLINE PROPHET", handle: "@basslineprophet", genre: "Dubstep", city: "Detroit",
                bio: "Detroit bass merchant. The drop is a religion.",
                monthlyListeners: 1_540_000, followers: 670_000, isVerified: true, aiEnabled: false,
                isUndergroundRising: false, tags: ["Dubstep", "Bass", "EDM"],
-               aiPersona: "High energy, hype, technical. Lives for sound design and festival mayhem."),
+               aiPersona: "High energy, hype, technical. Lives for sound design and festival mayhem.",
+               subgenres: ["Riddim", "Bass Music"], moodTags: ["Aggressive", "Hype", "Chaotic"],
+               sonicTags: ["heavy bass", "wobble", "distorted", "explosive"], energy: 97,
+               soundsLike: ["Excision", "Skrillex"], fanFundedMonthlyUSD: 196_000, streamingEquivUSD: 6_160,
+               popularityTier: "established"),
         Artist(id: "a6", name: "Sable Mirage", handle: "@sablemirage", genre: "R&B", city: "Atlanta",
                bio: "Smooth, smoky R&B for 3am thoughts.",
                monthlyListeners: 760_000, followers: 305_000, isVerified: true, aiEnabled: true,
                isUndergroundRising: false, tags: ["R&B", "Soul", "Neo-Soul"],
-               aiPersona: "Smooth, candid, intimate. Opens up about vulnerability and writing love songs."),
+               aiPersona: "Smooth, candid, intimate. Opens up about vulnerability and writing love songs.",
+               subgenres: ["Neo-Soul", "Alt R&B"], moodTags: ["Intimate", "Sultry", "Romantic"],
+               sonicTags: ["smooth", "velvety", "sultry", "warm"], energy: 44,
+               soundsLike: ["SZA", "Sade"], fanFundedMonthlyUSD: 56_200, streamingEquivUSD: 3_040,
+               popularityTier: "established"),
         Artist(id: "a7", name: "GLITCHCORE KID", handle: "@glitchcorekid", genre: "Hyperpop", city: "Chicago",
                bio: "Internet-core chaos. Made in a bedroom, played in stadiums soon.",
                monthlyListeners: 88_000, followers: 41_000, isVerified: false, aiEnabled: false,
                isUndergroundRising: true, tags: ["Hyperpop", "Glitch", "Experimental"],
-               aiPersona: "Chaotic, funny, terminally online. Talks memes, samples, and DIY culture."),
+               aiPersona: "Chaotic, funny, terminally online. Talks memes, samples, and DIY culture.",
+               subgenres: ["Glitchcore", "Digicore"], moodTags: ["Chaotic", "Hype", "Euphoric"],
+               sonicTags: ["glitchy", "distorted", "hyper", "synthetic"], energy: 90,
+               soundsLike: ["100 gecs", "SOPHIE"], fanFundedMonthlyUSD: 6_800, streamingEquivUSD: 352,
+               popularityTier: "rising"),
         Artist(id: "a8", name: "Marisol Vega", handle: "@marisolvega", genre: "Reggaeton", city: "Miami",
                bio: "Miami heat in every beat. Reggaeton with a global pulse.",
                monthlyListeners: 3_100_000, followers: 1_500_000, isVerified: true, aiEnabled: true,
                isUndergroundRising: false, tags: ["Reggaeton", "Latin", "Pop"],
-               aiPersona: "Fiery, confident, bilingual flair. Loves dancing, culture, and her fans (la familia)."),
+               aiPersona: "Fiery, confident, bilingual flair. Loves dancing, culture, and her fans (la familia).",
+               subgenres: ["Latin Pop", "Dembow"], moodTags: ["Sultry", "Hype", "Confident"],
+               sonicTags: ["dembow", "bilingual", "percussive", "sultry"], energy: 82,
+               soundsLike: ["Bad Bunny", "Rosalía"], fanFundedMonthlyUSD: 305_000, streamingEquivUSD: 12_400,
+               popularityTier: "established"),
     ]
+
+    /// All artists in the app: hand-authored heroes + 90+ procedurally-generated
+    /// underground acts (see DiscoveryEngine.swift) so every list feels full and the
+    /// "Hidden Gems" engine has a deep, lesser-known pool to surface.
+    static let artists: [Artist] = featuredArtists + Discovery.generatedArtists
 
     static func artist(_ id: String) -> Artist { artists.first { $0.id == id } ?? artists[0] }
 
@@ -66,7 +104,10 @@ enum Mock {
         Song(id: "s10", title: "Lunar Echoes", artistId: "a4", artistName: "LUNA TIDE", genre: "Ambient", mood: "Calm", energy: 24, durationSec: 312, plays: 880_000, isViral: false, releasedDaysAgo: 15),
     ]
 
-    static func songs(for artistId: String) -> [Song] { songs.filter { $0.artistId == artistId } }
+    static func songs(for artistId: String) -> [Song] {
+        let hero = songs.filter { $0.artistId == artistId }
+        return hero.isEmpty ? Discovery.generatedSongs.filter { $0.artistId == artistId } : hero
+    }
 
     static let moods = ["Euphoric", "Dreamy", "Aggressive", "Groovy", "Intimate", "Nostalgic", "Chaotic", "Calm"]
 
@@ -167,7 +208,50 @@ enum Mock {
     ]
 
     static func earnings(for artistId: String) -> ArtistEarnings {
-        artistEarnings.first { $0.artistId == artistId } ?? artistEarnings[0]
+        if let explicit = artistEarnings.first(where: { $0.artistId == artistId }) { return explicit }
+        // Synthesize a consistent breakdown from the artist's discovery-profile totals
+        // so generated/underground artists show honest, non-placeholder economics.
+        let a = artist(artistId)
+        let total = max(a.fanFundedMonthlyUSD, 1)
+        return ArtistEarnings(
+            id: "ae-\(artistId)", artistId: artistId,
+            directSupport: Int(Double(total) * 0.34),
+            dropSales: Int(Double(total) * 0.16),
+            merchRevenue: Int(Double(total) * 0.18),
+            superfanRevenue: Int(Double(total) * 0.12),
+            eventRevenue: Int(Double(total) * 0.20),
+            streamingEquivalent: max(a.streamingEquivUSD, 1),
+            artistKeepsPercent: 90,
+            streamCount: max(a.monthlyListeners * 3, 1)
+        )
+    }
+
+    // MARK: - Anchor Artists (famous taste reference points for #17)
+
+    /// Famous reference artists used purely as taste anchors in the discovery engine.
+    /// These are reference points only — never navigable profiles.
+    static let anchors: [AnchorArtist] = Discovery.anchors
+
+    /// Resolve a typed/selected anchor name (or genre) into a similarity vector.
+    static func anchorVector(named raw: String) -> SonicVector? {
+        let q = raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard !q.isEmpty else { return nil }
+        // 1) Exact/contains match against famous anchors.
+        if let a = anchors.first(where: { $0.name.lowercased() == q })
+            ?? anchors.first(where: { $0.name.lowercased().contains(q) || q.contains($0.name.lowercased()) }) {
+            return a.sonicVector
+        }
+        // 2) Match against an artist already in the app.
+        if let art = artists.first(where: { $0.name.lowercased() == q })
+            ?? artists.first(where: { $0.name.lowercased().contains(q) }) {
+            return art.sonicVector
+        }
+        // 3) Fall back to a genre-family vector ("sounds like dream pop").
+        if let fam = Discovery.family(matching: q) {
+            return SonicVector(displayName: raw, genre: fam.genre, subgenres: fam.subgenres,
+                               sonicTags: fam.sonicTags, moodTags: fam.moodTags, energy: fam.baseEnergy)
+        }
+        return nil
     }
 
     // MARK: - Funded Artists (for fan profile)

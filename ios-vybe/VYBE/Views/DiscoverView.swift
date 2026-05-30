@@ -11,7 +11,17 @@ struct DiscoverView: View {
     @State private var lens = "All"
     @State private var showingWhy = false
     @State private var whyText = ""
+    @State private var celebration: SupportReceipt? = nil
     private let lenses = ["All", "Artists", "Songs", "Events", "Communities"]
+
+    /// Top "Hidden Gems" matched to the fan's favorites (#17) for the preview row.
+    private var hiddenGemsPreview: [DiscoveryResult] {
+        let favs = Discovery.defaultFavorites(followed: app.followedArtists, taste: app.taste)
+        return Array(Discovery.hiddenGems(
+            favorites: favs,
+            excluding: app.followedArtists.union(app.discoveredArtists),
+            limit: 4))
+    }
 
     private var filteredArtists: [Artist] {
         guard !query.isEmpty else { return Mock.artists }
@@ -40,6 +50,7 @@ struct DiscoverView: View {
                         sceneSpotlightsSection
                         moodGrid
                         risingSection
+                        hiddenGemsSection
                         nearYouSection
                         viralSection
                     } else {
@@ -54,6 +65,46 @@ struct DiscoverView: View {
         .navigationTitle("Discover")
         .navigationBarTitleDisplayMode(.large)
         .vybeDestinations()
+        .sheet(item: $celebration) { receipt in
+            NavigationStack {
+                SupportReceiptView(receipt: receipt)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button("Done") { celebration = nil }.foregroundStyle(VYBE.text)
+                        }
+                    }
+            }
+            .environment(app)
+        }
+    }
+
+    // MARK: - Hidden Gems (#17)
+
+    private var hiddenGemsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("💎 Hidden Gems For You")
+                    .font(.system(size: 20, weight: .heavy, design: .rounded))
+                    .foregroundStyle(VYBE.text)
+                Spacer()
+                NavigationLink(value: Route.hiddenGems) {
+                    HStack(spacing: 3) {
+                        Text("See all").font(.system(size: 13, weight: .bold))
+                        Image(systemName: "arrow.right").font(.system(size: 11, weight: .bold))
+                    }
+                    .foregroundStyle(VYBE.cyan)
+                }
+                .buttonStyle(.plain)
+            }
+            Text("Lesser-known artists who sound like your favorites — support one early for the Early Discoverer bonus.")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(VYBE.textSecondary)
+            ForEach(hiddenGemsPreview) { result in
+                DiscoveryGemCard(result: result) {
+                    celebration = app.supportDiscovery(result.artist)
+                }
+            }
+        }
     }
 
     private var searchBar: some View {
