@@ -20,6 +20,7 @@ struct CommunitiesView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     yourScene
+                    cultureEntries
                     ChipRow(items: kinds, selection: $kind).padding(.horizontal, -20)
                     SectionHeader(title: "Communities")
                     VStack(spacing: 12) {
@@ -34,6 +35,28 @@ struct CommunitiesView: View {
         }
         .navigationTitle("Vybes")
         .vybeDestinations()
+    }
+
+    private var cultureEntries: some View {
+        HStack(spacing: 12) {
+            NavigationLink(value: Route.scenePulse) {
+                cultureTile("Scene Pulse", "🌃", "City heat & rising scenes", VYBE.magenta)
+            }.buttonStyle(.plain)
+            NavigationLink(value: Route.fanCrews) {
+                cultureTile("Fan Crews", "🤝", "Join a squad, run missions", VYBE.cyan)
+            }.buttonStyle(.plain)
+        }
+    }
+
+    private func cultureTile(_ title: String, _ emoji: String, _ sub: String, _ color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(emoji).font(.system(size: 22))
+            Text(title).font(.system(size: 15, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+            Text(sub).font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineLimit(2)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading).padding(14)
+        .background { ZStack { VYBE.card; HoloArt(seed: title).opacity(0.1) }.clipShape(.rect(cornerRadius: 18)) }
+        .overlay(RoundedRectangle(cornerRadius: 18).stroke(color.opacity(0.3), lineWidth: 1))
     }
 
     private var yourScene: some View {

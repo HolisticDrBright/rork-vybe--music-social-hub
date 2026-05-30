@@ -15,30 +15,29 @@ struct HomeView: View {
             VYBEBackground()
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
-                    greeting
-                    scoreCard
-                    vibeCheckEntry
-                    ChipRow(items: moods, selection: $mood)
-                        .padding(.horizontal, -20)
-
-                    // Trending strip
-                    SectionHeader(title: "🔥 Trending Now")
-                    trendingStrip
-
-                    // Sleeves + VYBE TV
-                    sleeveTVEntry
-
-                    // Collab drops born on VYBE
-                    if !app.upcomingDrops.isEmpty {
-                        SectionHeader(title: "✨ Born on VYBE")
-                        bornOnVYBEStrip
+                    Group {
+                        greeting
+                        scoreCard
+                        vibeCheckEntry
+                        ChipRow(items: moods, selection: $mood)
+                            .padding(.horizontal, -20)
+                        SectionHeader(title: "🔥 Trending Now")
+                        trendingStrip
                     }
-
-                    // Dynamic feed
-                    SectionHeader(title: "Your Feed")
-                    VStack(spacing: 14) {
-                        ForEach(Mock.feed) { item in
-                            FeedCard(item: item)
+                    Group {
+                        cultureSpotlight
+                        sleeveTVEntry
+                        if !app.upcomingDrops.isEmpty {
+                            SectionHeader(title: "✨ Born on VYBE")
+                            bornOnVYBEStrip
+                        }
+                    }
+                    Group {
+                        SectionHeader(title: "Your Feed")
+                        VStack(spacing: 14) {
+                            ForEach(Mock.feed) { item in
+                                FeedCard(item: item)
+                            }
                         }
                     }
                 }
@@ -155,6 +154,47 @@ struct HomeView: View {
             .padding(.horizontal, 20)
         }
         .padding(.horizontal, -20)
+    }
+
+    private var cultureSpotlight: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            // Featured drop campaign
+            HStack(alignment: .firstTextBaseline) {
+                Text("🚀 Drop Campaigns").font(.system(size: 19, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                Spacer()
+                NavigationLink(value: Route.dropCampaigns) {
+                    Text("See all").font(.system(size: 13, weight: .bold)).foregroundStyle(VYBE.magenta)
+                }
+            }
+            if let live = app.dropCampaigns.first(where: { $0.status == .live }) ?? app.dropCampaigns.first {
+                DropCampaignCard(campaign: live)
+            }
+            // Before They Blow banner
+            NavigationLink(value: Route.beforeTheyBlow) {
+                HStack(spacing: 12) {
+                    ZStack { RoundedRectangle(cornerRadius: 14).fill(VYBE.goldGrad).frame(width: 48, height: 48)
+                        Image(systemName: "waveform.path.ecg").font(.system(size: 20)).foregroundStyle(.white) }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Before They Blow").font(.system(size: 15, weight: .black, design: .rounded)).foregroundStyle(VYBE.text)
+                        Text("Back rising artists before they break").font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineLimit(1)
+                    }
+                    Spacer(); Image(systemName: "chevron.right").foregroundStyle(VYBE.textTertiary)
+                }
+                .padding(14).vybeCard(corner: 18)
+            }
+            .buttonStyle(.plain)
+            // Premiere rail
+            HStack(alignment: .firstTextBaseline) {
+                Text("📺 Tonight on VYBE TV").font(.system(size: 19, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                Spacer()
+                NavigationLink(value: Route.vybeTV) { Text("VYBE TV").font(.system(size: 13, weight: .bold)).foregroundStyle(VYBE.magenta) }
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 14) { ForEach(Mock.videoPremieres) { PremiereCard(premiere: $0) } }
+                .padding(.horizontal, 20)
+            }
+            .padding(.horizontal, -20)
+        }
     }
 
     private var sleeveTVEntry: some View {

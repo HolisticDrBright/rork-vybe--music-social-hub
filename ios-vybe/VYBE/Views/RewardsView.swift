@@ -23,6 +23,7 @@ struct RewardsView: View {
                     earnRow
                     SectionHeader(title: "🏆 Active Challenges")
                     VStack(spacing: 12) { ForEach(Mock.challenges.prefix(3)) { ChallengeCard(challenge: $0) } }
+                    missionsSection
                     SectionHeader(title: "Rewards Marketplace")
                     ChipRow(items: Mock.rewardCategories, selection: $category).padding(.horizontal, -20)
                     LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
@@ -39,6 +40,17 @@ struct RewardsView: View {
         .navigationTitle("Rewards")
         .vybeDestinations()
         .sheet(item: $redeemed) { reward in RedeemSheet(reward: reward) }
+    }
+
+    private var missionsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("🎯 Artist Growth Missions").font(.system(size: 20, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                Spacer()
+                NavigationLink(value: Route.artistMissions) { Text("See all").font(.system(size: 13, weight: .bold)).foregroundStyle(VYBE.purple) }
+            }
+            ForEach(app.artistMissions.prefix(2)) { MissionCard(mission: $0) }
+        }
     }
 
     private var scoreHero: some View {

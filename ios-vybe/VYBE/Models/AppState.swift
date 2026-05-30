@@ -116,6 +116,15 @@ final class AppState {
     /// Sleeves created by the artist in the Sleeve Builder (prototype, in-session).
     var customSleeves: [SongSleeve] = []
 
+    // --- Culture systems (drop campaigns, missions, crews, premieres) ---
+    var dropCampaigns: [DropCampaign] = Mock.dropCampaigns
+    var artistMissions: [ArtistMission] = Mock.artistMissions
+    var joinedCrews: Set<String> = []
+    var supportedCampaigns: Set<String> = []
+    var contributedMissions: Set<String> = []
+    /// Culture badges ("First Heard It", "Early Discoverer", "Premiere Crew", "Crew Member").
+    var cultureBadges: Set<String> = []
+
     // --- Haptic feedback helper ---
     func haptic(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
         UIImpactFeedbackGenerator(style: style).impactOccurred()
@@ -406,6 +415,86 @@ final class AppState {
         withAnimation(.snappy) { customSleeves.insert(sleeve, at: 0) }
         addScore(150, reason: "Published a drop sleeve")
         hapticSuccess()
+    }
+
+    // MARK: - Culture Actions
+
+    func dropCampaign(_ id: String) -> DropCampaign? { dropCampaigns.first { $0.id == id } }
+    func mission(_ id: String) -> ArtistMission? { artistMissions.first { $0.id == id } }
+    func missions(forArtist artistId: String) -> [ArtistMission] { artistMissions.filter { $0.artistId == artistId } }
+
+    /// Support a drop campaign early — drives funding, earns First Heard It, returns a receipt.
+    @discardableResult
+    func supportCampaign(_ id: String, amount: Int = 10) -> SupportReceipt? {
+        guard let i = dropCampaigns.firstIndex(where: { $0.id == id }) else { return nil }
+        let artist = Mock.artist(dropCampaigns[i].artistId)
+        let title = dropCampaigns[i].title
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+            dropCampaigns[i].raisedUSD += amount
+            dropCampaigns[i].presaves += 1
+            if dropCampaigns[i].raisedUSD >= dropCampaigns[i].supportGoalUSD, dropCampaigns[i].status == .live {
+                dropCampaigns[i].status = .funded
+            }
+        }
+        supportedCampaigns.insert(id)
+        cultureBadges.insert("First Heard It")
+        cultureBadges.insert("Early Discoverer")
+        return recordSupport(.buyDrop(amount), artist: artist, songTitle: title, badge: "First Heard It — early supporter")
+    }
+
+    func boostCampaign(_ id: String) {
+        guard let i = dropCampaigns.firstIndex(where: { $0.id == id }) else { return }
+        withAnimation(.snappy) { dropCampaigns[i].boosts += 1 }
+        shareCount += 1
+        viralImpact = min(100, viralImpact + 1)
+        addScore(150, reason: "Boosted a drop")
+        haptic(.light)
+    }
+
+    /// Contribute to an artist growth mission — advances progress + VYBE Score.
+    func contributeToMission(_ id: String) {
+        guard let i = artistMissions.firstIndex(where: { $0.id == id }) else { return }
+        let step = max(1, artistMissions[i].goal / 12)
+        withAnimation(.snappy) {
+            artistMissions[i].progress = min(artistMissions[i].goal, artistMissions[i].progress + step)
+        }
+        contributedMissions.insert(id)
+        addScore(max(50, artistMissions[i].points / 5), reason: "Helped a mission")
+        hapticSuccess()
+    }
+
+    /// Back a "Before They Blow" artist early — Early Discoverer + First Heard It.
+    func backEarly(_ alert: BeforeTheyBlowAlert) {
+        cultureBadges.insert("Early Discoverer")
+        cultureBadges.insert("First Heard It")
+        if let art = Mock.artists.first(where: { $0.id == alert.artistId }) {
+            discoveredArtists.insert(art.id)
+            discoveredGenres.insert(art.genre)
+            _ = recordSupport(.discover, artist: art, badge: "Early Discoverer unlocked")
+        } else {
+            addScore(200, reason: "Backed \(alert.artistName) early")
+            hapticSuccess()
+        }
+    }
+
+    func toggleCrew(_ id: String) {
+        if joinedCrews.contains(id) {
+            joinedCrews.remove(id)
+        } else {
+            joinedCrews.insert(id)
+            cultureBadges.insert("Crew Member")
+            addScore(120, reason: "Joined a fan crew")
+            hapticSuccess()
+        }
+    }
+
+    /// Support / react during a video premiere — earns Premiere Crew.
+    @discardableResult
+    func supportPremiere(_ premiere: VideoPremiere) -> SupportReceipt {
+        cultureBadges.insert("Premiere Crew")
+        if let vid = premiere.videoId, let v = Mock.video(vid) { watchVideo(v) }
+        let artist = Mock.artist(premiere.artistId)
+        return recordSupport(.boost, artist: artist, songTitle: premiere.title, badge: "Premiere Crew unlocked")
     }
 
     // MARK: - VYBE Loop

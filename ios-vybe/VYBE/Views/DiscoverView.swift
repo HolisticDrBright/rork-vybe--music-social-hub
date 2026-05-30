@@ -57,15 +57,21 @@ struct DiscoverView: View {
                         .padding(.horizontal, -20)
 
                     if query.isEmpty {
-                        vibeCheckBanner
-                        sceneSpotlightsSection
-                        moodGrid
-                        risingSection
-                        sleevesSection
-                        soundsLikeSection
-                        hiddenGemsSection
-                        nearYouSection
-                        viralSection
+                        Group {
+                            vibeCheckBanner
+                            beforeTheyBlowSection
+                            scenePulseSection
+                            sceneSpotlightsSection
+                            moodGrid
+                        }
+                        Group {
+                            risingSection
+                            sleevesSection
+                            soundsLikeSection
+                            hiddenGemsSection
+                            nearYouSection
+                            viralSection
+                        }
                     } else {
                         searchResults
                     }
@@ -215,6 +221,58 @@ struct DiscoverView: View {
                     MoodTile(mood: mood)
                 }
             }
+        }
+    }
+
+    private var beforeTheyBlowSection: some View {
+        NavigationLink(value: Route.beforeTheyBlow) {
+            HStack(spacing: 12) {
+                ZStack { RoundedRectangle(cornerRadius: 14).fill(VYBE.goldGrad).frame(width: 52, height: 52)
+                    Image(systemName: "waveform.path.ecg").font(.system(size: 22)).foregroundStyle(.white) }
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 6) {
+                        Text("Before They Blow").font(.system(size: 15, weight: .black, design: .rounded)).foregroundStyle(VYBE.text)
+                        NeonTag(text: "RISING", color: VYBE.gold, icon: "arrow.up.right")
+                    }
+                    Text("\(Mock.beforeTheyBlow.count) artists showing real momentum right now").font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineLimit(1)
+                }
+                Spacer(); Image(systemName: "chevron.right").foregroundStyle(VYBE.textTertiary)
+            }
+            .padding(14)
+            .background { ZStack { VYBE.card; HoloArt(seed: "btbdiscover").opacity(0.12) }.clipShape(.rect(cornerRadius: 18)) }
+            .overlay(RoundedRectangle(cornerRadius: 18).stroke(VYBE.gold.opacity(0.25), lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var scenePulseSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("🌃 Scene Pulse").font(.system(size: 20, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                Spacer()
+                NavigationLink(value: Route.scenePulse) { Text("All scenes").font(.system(size: 13, weight: .bold)).foregroundStyle(VYBE.magenta) }
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 14) {
+                    ForEach(Mock.scenePulses.sorted { $0.heat > $1.heat }) { scene in
+                        NavigationLink(value: Route.scene(scene.id)) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                ZStack(alignment: .topTrailing) {
+                                    HoloArt(seed: scene.label, corner: 16).frame(width: 200, height: 110)
+                                    Text("\(scene.heat)").font(.system(size: 20, weight: .black, design: .rounded)).foregroundStyle(.white)
+                                        .padding(8).background(.black.opacity(0.4), in: .circle).padding(8)
+                                }
+                                Text(scene.label).font(.system(size: 13, weight: .bold)).foregroundStyle(VYBE.text).lineLimit(1).frame(width: 200, alignment: .leading)
+                                Text("\(scene.showsThisWeek) shows · \(scene.fanCrews) crews").font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary).frame(width: 200, alignment: .leading)
+                            }
+                            .frame(width: 200)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 20)
+            }
+            .padding(.horizontal, -20)
         }
     }
 

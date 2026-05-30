@@ -25,6 +25,7 @@ struct ArtistDashboardView: View {
                         headerCard
                         collabLabModule
                         sleeveBuilderModule
+                        artistCultureModule
                         growthChart
                         earningsVsStreaming
                         recognitionCard
@@ -134,6 +135,32 @@ struct ArtistDashboardView: View {
             }
             .buttonStyle(.plain)
         }
+    }
+
+    // MARK: - Artist culture module (drop campaigns, missions, need board)
+
+    private var artistCultureModule: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            SectionHeader(title: "Grow your drop")
+            HStack(spacing: 10) {
+                cultureTile("Drop Campaigns", "flame.fill", VYBE.magenta, .dropCampaigns)
+                cultureTile("Growth Missions", "target", VYBE.gold, .artistMissions)
+            }
+            cultureTile("Artist Need Board", "person.2.badge.gearshape.fill", VYBE.cyan, .artistNeeds, wide: true)
+        }
+    }
+
+    private func cultureTile(_ title: String, _ icon: String, _ color: Color, _ route: Route, wide: Bool = false) -> some View {
+        NavigationLink(value: route) {
+            HStack(spacing: 10) {
+                Image(systemName: icon).font(.system(size: 16, weight: .bold)).foregroundStyle(color).frame(width: 26)
+                Text(title).font(.system(size: 13, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text).lineLimit(1)
+                Spacer()
+                Image(systemName: "chevron.right").font(.system(size: 11)).foregroundStyle(VYBE.textTertiary)
+            }
+            .padding(13).vybeCard(corner: 14)
+        }
+        .buttonStyle(.plain)
     }
 
     private func collabStat(_ value: String, _ label: String, _ color: Color) -> some View {

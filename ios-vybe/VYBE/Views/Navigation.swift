@@ -31,6 +31,19 @@ enum Route: Hashable {
     case sleeve(String)         // Interactive song sleeve (art + lyrics + lore)
     case vybeTV                 // VYBE TV / Video Lounge
     case sleeveBuilder          // Artist-side sleeve creation
+    // --- Culture systems ---
+    case dropCampaigns          // Drop campaign hub
+    case dropCampaign(String)   // Drop campaign detail
+    case beforeTheyBlow         // Before They Blow alerts
+    case scenePulse             // Scene Pulse hub
+    case scene(String)          // Scene detail
+    case fanCrews               // Fan Crews hub
+    case fanCrew(String)        // Fan crew detail
+    case artistNeeds            // Artist Need Board
+    case artistMissions         // Artist Growth Missions
+    case fanTimeline            // Fan Investment Timeline
+    case musicDNA               // Music DNA / Taste Graph
+    case premiere(String)       // VYBE TV video premiere
 }
 
 extension View {
@@ -61,6 +74,18 @@ extension View {
             case .sleeve(let id): SleeveDetailView(sleeveId: id)
             case .vybeTV: VYBETVView()
             case .sleeveBuilder: SleeveBuilderView()
+            case .dropCampaigns: DropCampaignsHubView()
+            case .dropCampaign(let id): DropCampaignView(campaignId: id)
+            case .beforeTheyBlow: BeforeTheyBlowView()
+            case .scenePulse: ScenePulseView()
+            case .scene(let id): SceneDetailView(sceneId: id)
+            case .fanCrews: FanCrewsView()
+            case .fanCrew(let id): FanCrewDetailView(crewId: id)
+            case .artistNeeds: ArtistNeedBoardView()
+            case .artistMissions: ArtistMissionsView()
+            case .fanTimeline: FanInvestmentTimelineView()
+            case .musicDNA: MusicDNAView()
+            case .premiere(let id): PremiereView(premiereId: id)
             }
         }
     }

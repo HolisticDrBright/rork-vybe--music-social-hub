@@ -28,6 +28,7 @@ struct ArtistProfileView: View {
                         if artist.aiEnabled { aiBanner }
                         earningsBanner
                         sleevesVideosBanner
+                        dropCampaignBanner
                         tabPicker
                         tabContent
                     }
@@ -215,6 +216,32 @@ struct ArtistProfileView: View {
             .padding(14)
             .background { ZStack { VYBE.card; HoloArt(seed: "sleevebanner\(artistId)").opacity(0.12) }.clipShape(.rect(cornerRadius: 18)) }
             .overlay(RoundedRectangle(cornerRadius: 18).stroke(VYBE.purple.opacity(0.3), lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder private var dropCampaignBanner: some View {
+        let campaign = app.dropCampaigns.first { $0.artistId == artistId }
+        let openMissions = app.missions(forArtist: artistId).count
+        let route: Route = campaign.map { Route.dropCampaign($0.id) } ?? .artistMissions
+        NavigationLink(value: route) {
+            HStack(spacing: 12) {
+                ZStack { Circle().fill(VYBE.holoSunset).frame(width: 44, height: 44)
+                    Image(systemName: "flame.fill").font(.system(size: 18)).foregroundStyle(.white) }
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 6) {
+                        Text(campaign != nil ? "Drop Campaign" : "Growth Missions").font(.system(size: 15, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                        if campaign?.bornOnVYBE == true { BornOnVYBEBadge() }
+                    }
+                    Text(campaign != nil ? (campaign!.countdownText) : "\(openMissions) open missions to help \(artist.name) grow")
+                        .font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineLimit(1)
+                }
+                Spacer()
+                Image(systemName: "chevron.right").foregroundStyle(VYBE.textTertiary)
+            }
+            .padding(14)
+            .background { ZStack { VYBE.card; HoloArt(seed: "dropbanner\(artistId)").opacity(0.12) }.clipShape(.rect(cornerRadius: 18)) }
+            .overlay(RoundedRectangle(cornerRadius: 18).stroke(VYBE.magenta.opacity(0.3), lineWidth: 1))
         }
         .buttonStyle(.plain)
     }

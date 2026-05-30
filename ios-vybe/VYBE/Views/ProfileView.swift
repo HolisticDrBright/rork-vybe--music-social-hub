@@ -23,17 +23,22 @@ struct ProfileView: View {
                 VStack(spacing: 0) {
                     header
                     VStack(spacing: 20) {
-                        // Artist tools (dashboard + Collab Lab) — always reachable in the prototype.
-                        dashboardLink
-                        fanImpactSection
-                        fundedArtistsSection
-                        discoveredSection
-                        personality
-                        badgesSection
-                        topArtistsSection
-                        savedSection
-                        concertHistory
-                        revenueModules
+                        Group {
+                            // Artist tools (dashboard + Collab Lab) — always reachable in the prototype.
+                            dashboardLink
+                            cultureLinks
+                            fanImpactSection
+                            fundedArtistsSection
+                            discoveredSection
+                        }
+                        Group {
+                            personality
+                            badgesSection
+                            topArtistsSection
+                            savedSection
+                            concertHistory
+                            revenueModules
+                        }
                     }
                     .padding(.horizontal, 20).padding(.top, 16).padding(.bottom, 40)
                 }
@@ -74,6 +79,29 @@ struct ProfileView: View {
             }
             .padding(.bottom, 6)
         }
+    }
+
+    private var cultureLinks: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 10) {
+                cultureLink("Your Investments", "chart.line.uptrend.xyaxis", VYBE.green, .fanTimeline)
+                cultureLink("Music DNA", "waveform.path.ecg.rectangle.fill", VYBE.magenta, .musicDNA)
+            }
+            cultureLink("Fan Crews", "person.3.fill", VYBE.cyan, .fanCrews, wide: true)
+        }
+    }
+
+    private func cultureLink(_ title: String, _ icon: String, _ color: Color, _ route: Route, wide: Bool = false) -> some View {
+        NavigationLink(value: route) {
+            HStack(spacing: 10) {
+                Image(systemName: icon).font(.system(size: 16, weight: .bold)).foregroundStyle(color).frame(width: 26)
+                Text(title).font(.system(size: 14, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text).lineLimit(1)
+                Spacer()
+                Image(systemName: "chevron.right").font(.system(size: 12)).foregroundStyle(VYBE.textTertiary)
+            }
+            .padding(14).vybeCard(corner: 16)
+        }
+        .buttonStyle(.plain)
     }
 
     private var dashboardLink: some View {
