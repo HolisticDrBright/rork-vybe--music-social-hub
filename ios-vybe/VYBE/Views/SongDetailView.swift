@@ -266,9 +266,9 @@ struct SongDetailView: View {
 
                 // Artist side
                 VStack(spacing: 6) {
-                    Image(systemName: "dollarsign.circle.fill").font(.system(size: 20)).foregroundStyle(VYBE.green)
-                    Text("$\(Int(Double(750) * 0.12) + 5)").font(.system(size: 22, weight: .black, design: .rounded)).foregroundStyle(VYBE.green)
-                    Text("Artist earns").font(.system(size: 10, weight: .semibold)).foregroundStyle(VYBE.textSecondary)
+                    Image(systemName: "bolt.heart.fill").font(.system(size: 20)).foregroundStyle(VYBE.green)
+                    Text("Direct").font(.system(size: 22, weight: .black, design: .rounded)).foregroundStyle(VYBE.green)
+                    Text("Real artist support").font(.system(size: 10, weight: .semibold)).foregroundStyle(VYBE.textSecondary)
                     Text("keeps 90%").font(.system(size: 10, weight: .bold)).foregroundStyle(VYBE.green)
                 }
                 .frame(maxWidth: .infinity).padding(.vertical, 10).background(VYBE.green.opacity(0.06), in: .rect(cornerRadius: 12))

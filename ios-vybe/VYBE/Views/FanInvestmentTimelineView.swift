@@ -11,8 +11,6 @@ import SwiftUI
 struct FanInvestmentTimelineView: View {
     @Environment(AppState.self) private var app
 
-    private var totalDriven: Int { Mock.fanInvestments.reduce(0) { $0 + $1.earningsDriven } + app.totalEarningsDriven / 10 }
-
     var body: some View {
         ZStack {
             VYBEBackground()
@@ -34,7 +32,7 @@ struct FanInvestmentTimelineView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text("You were early.")
                 .font(.system(size: 22, weight: .black, design: .rounded)).foregroundStyle(VYBE.text)
-            Text("You've backed \(Mock.fanInvestments.count) artists before they broke and driven $\(app.totalEarningsDriven.compact) in fan support. Your taste is your track record.")
+            Text("You've backed \(Mock.fanInvestments.count) artists before they broke and supported them directly — they earn more here than streaming ever paid. Your taste is your track record.")
                 .font(.system(size: 13, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineSpacing(3)
         }
         .padding(16)
@@ -67,7 +65,7 @@ struct FanInvestmentTimelineView: View {
                         Text("growth").font(.system(size: 9, weight: .semibold)).foregroundStyle(VYBE.textTertiary)
                     }
                 }
-                Text("You backed \(fi.artistName) at \(fi.listenersWhenDiscovered.compact) listeners. Now \(fi.listenersNow.compact). You helped drive $\(fi.earningsDriven) in fan support.")
+                Text("You backed \(fi.artistName) at \(fi.listenersWhenDiscovered.compact) listeners. Now \(fi.listenersNow.compact). You've supported them directly ever since — worth far more than streaming.")
                     .font(.system(size: 13, weight: .medium, design: .serif)).foregroundStyle(VYBE.text.opacity(0.9)).lineSpacing(2)
                 HStack(spacing: 6) {
                     Image(systemName: "flag.checkered").font(.system(size: 11)).foregroundStyle(VYBE.gold)

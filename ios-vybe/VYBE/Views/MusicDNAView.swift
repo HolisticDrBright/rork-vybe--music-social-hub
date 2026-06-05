@@ -43,7 +43,7 @@ struct MusicDNAView: View {
             HStack(spacing: 24) {
                 StatBlock(value: "\(dna.artistsDiscovered)", label: "Discovered", color: VYBE.cyan)
                 StatBlock(value: "\(dna.earlySupports)", label: "Early backs", color: VYBE.green)
-                StatBlock(value: "$\(app.totalEarningsDriven.compact)", label: "Driven", color: VYBE.gold)
+                StatBlock(value: app.vybeScore.compact, label: "VYBE Score", color: VYBE.gold)
             }
         }
         .frame(maxWidth: .infinity).padding(16)

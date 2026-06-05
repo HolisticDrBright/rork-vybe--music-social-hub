@@ -165,7 +165,7 @@ extension Mock {
                 currentMission: "Back 5 sub-5k artists this month", recentActivity: ["Asha Vale flagged at 3.2k", "Cobalt Skyline backed early", "Collector streak: 11 days"],
                 blurb: "We were there before the blow-up. Taste as a badge of honor."),
         FanCrew(id: "cr-midnight", name: "Midnight Signal Launch Squad", focus: .drop, focusLabel: "Midnight Signal", members: 920, impactScore: 84,
-                currentMission: "Hit $2,000 fan support", recentActivity: ["$1,240 / $2,000 raised", "138 pre-saves", "Demo unlock at 75%"],
+                currentMission: "Fully fund the launch drop", recentActivity: ["Fan support 62% to goal", "138 pre-saves", "Demo unlock at 75%"],
                 blurb: "Launching the Collab Lab winner into a cultural moment."),
         FanCrew(id: "cr-prism", name: "PRISM Festival Crew", focus: .event, focusLabel: "PRISM Festival 2026", members: 2_100, impactScore: 79,
                 currentMission: "Coordinate meetups + ride shares", recentActivity: ["7 friends going", "Afterparty board live", "Glow squad outfits planned"],

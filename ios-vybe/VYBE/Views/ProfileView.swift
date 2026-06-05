@@ -74,7 +74,7 @@ struct ProfileView: View {
                 }
                 HStack(spacing: 24) {
                     StatBlock(value: app.vybeScore.compact, label: "VYBE Score", color: VYBE.magenta)
-                    StatBlock(value: "$\(app.totalEarningsDriven)", label: "Driven to Artists", color: VYBE.green)
+                    StatBlock(value: "\(Mock.fundedArtists.count)", label: "Supported", color: VYBE.green)
                     StatBlock(value: "\(app.followedArtists.count)", label: "Following", color: VYBE.cyan)
                 }
                 .padding(.top, 6).padding(.horizontal, 30)
@@ -177,10 +177,10 @@ struct ProfileView: View {
             SectionHeader(title: "Artists You've Funded")
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("$\(app.totalEarningsDriven)")
+                    Text("\(Mock.fundedArtists.count) artists")
                         .font(.system(size: 24, weight: .black, design: .rounded))
                         .foregroundStyle(VYBE.green)
-                    Text("Total earnings you drove to artists")
+                    Text("You support directly — they earn more than streaming")
                         .font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary)
                 }
                 Spacer()
@@ -203,7 +203,7 @@ struct ProfileView: View {
                             Text(fa.artistHandle).font(.system(size: 11)).foregroundStyle(VYBE.textSecondary)
                         }
                         HStack(spacing: 8) {
-                            Label("$\(fa.totalContributed)", systemImage: "dollarsign.circle.fill")
+                            Label("Supporting", systemImage: "bolt.heart.fill")
                                 .font(.system(size: 11, weight: .bold)).foregroundStyle(VYBE.green)
                             Label("Rank #\(fa.rank)", systemImage: "crown.fill")
                                 .font(.system(size: 11, weight: .bold)).foregroundStyle(VYBE.gold)
@@ -227,9 +227,9 @@ struct ProfileView: View {
         return VStack(alignment: .leading, spacing: 12) {
             SectionHeader(title: "Your Impact")
             HStack(spacing: 10) {
-                impactTile("$\(impact.earningsDriven.compact)", "Drove to artists", VYBE.green, "dollarsign.circle.fill")
+                impactTile("\(impact.earlyWins.count)", "Early Wins", VYBE.green, "trophy.fill")
                 impactTile("\(impact.discoveredCount)", "Discovered", VYBE.cyan, "sparkle.magnifyingglass")
-                impactTile("\(impact.artistsFunded)", "Funded", VYBE.magenta, "heart.fill")
+                impactTile("\(impact.artistsFunded)", "Supported", VYBE.magenta, "heart.fill")
             }
 
             // Scene influence

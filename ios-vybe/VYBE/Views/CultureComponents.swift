@@ -104,7 +104,7 @@ struct DropCampaignCard: View {
                 VStack(alignment: .leading, spacing: 10) {
                     Text(campaign.title).font(.system(size: 16, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text).lineLimit(2)
                     Text(campaign.subtitle).font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineLimit(2)
-                    GoalBar(label: "Fan support", value: "$\(campaign.raisedUSD) / $\(campaign.supportGoalUSD)", progress: campaign.fundingProgress, color: VYBE.green)
+                    GoalBar(label: "Fan support", value: "\(Int(campaign.fundingProgress * 100))% to goal", progress: campaign.fundingProgress, color: VYBE.green)
                     HStack(spacing: 12) {
                         Label("\(campaign.boosts)/\(campaign.boostGoal) boosts", systemImage: "bolt.horizontal.fill")
                         Label("\(campaign.presaves)/\(campaign.presaveGoal) pre-saves", systemImage: "bookmark.fill")

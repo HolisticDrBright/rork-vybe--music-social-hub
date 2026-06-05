@@ -266,7 +266,7 @@ struct SupportReceipt: Identifiable, Hashable {
     var multiplier: Int = 0             // artistEarnedUSD / streamingEquivUSD
     var fanRank: Int = 0                // the fan's new rank on this artist's board
     var badgeProgress: String? = nil    // e.g. "Early Discoverer unlocked!"
-    /// Headline copy, e.g. "You helped Asha Vale earn $3.80…".
+    /// Headline copy, e.g. "You supported Asha Vale directly — worth far more than streaming…".
     var headline: String = ""
 }
 

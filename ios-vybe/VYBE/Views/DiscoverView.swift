@@ -475,10 +475,6 @@ struct ArtistRow: View {
     let artist: Artist
     var showEarnings: Bool = false
 
-    private var earnings: ArtistEarnings? {
-        showEarnings ? Mock.earnings(for: artist.id) : nil
-    }
-
     var body: some View {
         HStack(spacing: 12) {
             AvatarView(seed: artist.name, size: 52)
@@ -492,10 +488,10 @@ struct ArtistRow: View {
                 }
                 Text("\(artist.genre) · \(artist.monthlyListeners.compact) monthly")
                     .font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary)
-                if let e = earnings {
+                if showEarnings {
                     HStack(spacing: 4) {
-                        Image(systemName: "dollarsign.circle.fill").font(.system(size: 9)).foregroundStyle(VYBE.green)
-                        Text("Fan-funded: $\(e.total.compact) this month")
+                        Image(systemName: "bolt.heart.fill").font(.system(size: 9)).foregroundStyle(VYBE.green)
+                        Text("Fan-supported · earns more than streaming")
                             .font(.system(size: 11, weight: .semibold)).foregroundStyle(VYBE.green)
                     }
                     .padding(.top, 1)

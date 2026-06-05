@@ -79,8 +79,6 @@ enum SupportEconomics {
                             badge: String?) -> SupportReceipt {
         let streamingEquiv = Double(outcome.streams) * streamRate
         let mult = multiplier(dollars: outcome.artistDollars, streamingEquiv: streamingEquiv)
-        let money = String(format: "$%.2f", outcome.artistDollars)
-        let streamMoney = String(format: "$%.2f", streamingEquiv)
 
         let actionText: String = {
             if let songTitle, case .share = action { return "Shared \"\(songTitle)\"" }
@@ -89,7 +87,7 @@ enum SupportEconomics {
             return action.verb
         }()
 
-        let headline = "You helped \(artist.name) earn \(money). Streaming would have paid about \(streamMoney). You earned +\(outcome.score) VYBE Score and moved to #\(newRank) on \(artist.name)'s fan board."
+        let headline = "You supported \(artist.name) directly — worth far more to them than streaming. You earned +\(outcome.score) VYBE Score and moved to #\(newRank) on \(artist.name)'s fan board."
 
         return SupportReceipt(
             id: UUID().uuidString,

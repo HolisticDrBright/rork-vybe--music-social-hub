@@ -579,12 +579,12 @@ struct VibeCheckView: View {
                             .foregroundStyle(VYBE.textSecondary)
                             .lineLimit(1)
 
-                        // Earnings signal
-                        if let e = earnings {
+                        // Support signal (no income amounts)
+                        if earnings != nil {
                             HStack(spacing: 4) {
-                                Image(systemName: "dollarsign.circle.fill")
+                                Image(systemName: "bolt.heart.fill")
                                     .font(.system(size: 9))
-                                Text("Fan-funded: $\(e.total.compact)/mo")
+                                Text("Fan-supported")
                                     .font(.system(size: 10, weight: .semibold))
                             }
                             .foregroundStyle(VYBE.green)

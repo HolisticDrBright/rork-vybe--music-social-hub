@@ -2,8 +2,9 @@
 //  EarningsTransparencyView.swift
 //  VYBE
 //
-//  Full earnings breakdown for an artist: direct support vs streaming.
-//  Shows "Artist keeps 90%" and the dramatic streaming comparison.
+//  Why supporting an artist here matters — qualitative. We tell fans that
+//  artists earn far more from direct support than from streaming, and that
+//  artists keep 90% — without putting a dollar figure on any artist's income.
 //
 
 import SwiftUI
@@ -13,23 +14,16 @@ struct EarningsTransparencyView: View {
     @Environment(AppState.self) private var app
 
     private var artist: Artist { Mock.artist(artistId) }
-    private var earnings: ArtistEarnings { Mock.earnings(for: artistId) }
-    private var ratio: Int { max(1, Int(Double(earnings.total) / Double(max(earnings.streamingEquivalent, 1)))) }
 
     var body: some View {
         ZStack {
             VYBE.bg.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 18) {
-                    // Hero: total vs streaming
-                    comparisonHero
-                    // 90% badge
+                    heroCard
                     keepBadge
-                    // Breakdown
-                    breakdownSection
-                    // Per-stream math
-                    perStreamMath
-                    // Bottom message
+                    channelsCard
+                    whyDifferent
                     bottomMessage
                 }
                 .padding(20)
@@ -37,68 +31,39 @@ struct EarningsTransparencyView: View {
             }
             .scrollIndicators(.hidden)
         }
-        .navigationTitle("Earnings Transparency")
+        .navigationTitle("How Support Works")
         .navigationBarTitleDisplayMode(.inline)
         .vybeDestinations()
     }
 
-    // MARK: - Comparison Hero
+    // MARK: - Hero
 
-    private var comparisonHero: some View {
-        VStack(spacing: 16) {
-            // VYBE earnings
-            VStack(spacing: 4) {
-                Text("VYBE Earnings")
-                    .font(.system(size: 12, weight: .heavy, design: .rounded))
-                    .tracking(1.5)
-                    .foregroundStyle(VYBE.green)
-                Text("$\(earnings.total.grouped)")
-                    .font(.system(size: 48, weight: .black, design: .rounded))
-                    .foregroundStyle(VYBE.text)
-                    .contentTransition(.numericText())
-                Text("this month from direct fan support")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(VYBE.textSecondary)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(20)
-            .background(VYBE.green.opacity(0.08), in: .rect(cornerRadius: 20))
-            .overlay(RoundedRectangle(cornerRadius: 20).stroke(VYBE.green.opacity(0.3), lineWidth: 1))
-
-            // VS
+    private var heroCard: some View {
+        VStack(spacing: 10) {
             ZStack {
-                Circle().fill(VYBE.card).frame(width: 56, height: 56)
-                Text("VS").font(.system(size: 16, weight: .black, design: .rounded)).foregroundStyle(VYBE.textSecondary)
+                Circle().fill(VYBE.green.opacity(0.15)).frame(width: 64, height: 64)
+                Image(systemName: "bolt.heart.fill").font(.system(size: 28)).foregroundStyle(VYBE.green)
             }
-
-            // Spotify equivalent
-            VStack(spacing: 4) {
-                Text("Spotify Equivalent")
-                    .font(.system(size: 12, weight: .heavy, design: .rounded))
-                    .tracking(1.5)
-                    .foregroundStyle(VYBE.textTertiary)
-                Text("$\(earnings.streamingEquivalent.grouped)")
-                    .font(.system(size: 40, weight: .black, design: .rounded))
-                    .foregroundStyle(VYBE.textSecondary)
-                Text("what \(artist.name) would earn from \(earnings.streamCount.compact) streams @ $0.004/stream")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(VYBE.textTertiary)
-                    .multilineTextAlignment(.center)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(20)
-            .background(.white.opacity(0.04), in: .rect(cornerRadius: 20))
-            .overlay(RoundedRectangle(cornerRadius: 20).stroke(VYBE.stroke, lineWidth: 1))
-
-            // Multiplier callout
-            Text("VYBE pays **\(ratio)x** what streaming would.")
-                .font(.system(size: 18, weight: .heavy, design: .rounded))
-                .foregroundStyle(VYBE.green)
+            Text("Support that actually reaches \(artist.name)")
+                .font(.system(size: 19, weight: .black, design: .rounded))
+                .foregroundStyle(VYBE.text)
                 .multilineTextAlignment(.center)
+            Text("On VYBE, fans support artists directly — and artists earn far more here than from a fraction of a cent per stream. When you show up early, it actually moves the needle.")
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(VYBE.textSecondary)
+                .multilineTextAlignment(.center)
+                .lineSpacing(3)
         }
+        .frame(maxWidth: .infinity)
+        .padding(20)
+        .background {
+            ZStack { VYBE.card; HoloArt(seed: "supporthero").opacity(0.12) }
+                .clipShape(.rect(cornerRadius: 22))
+        }
+        .overlay(RoundedRectangle(cornerRadius: 22).stroke(VYBE.green.opacity(0.3), lineWidth: 1))
     }
 
-    // MARK: - Keep Badge
+    // MARK: - 90% revenue-share badge
 
     private var keepBadge: some View {
         HStack(spacing: 14) {
@@ -110,10 +75,10 @@ struct EarningsTransparencyView: View {
                     .foregroundStyle(VYBE.green)
             }
             VStack(alignment: .leading, spacing: 4) {
-                Text("Artist keeps 90%")
+                Text("Artists keep 90%")
                     .font(.system(size: 17, weight: .heavy, design: .rounded))
                     .foregroundStyle(VYBE.text)
-                Text("Artists keep 90% of every dollar of fan support. VYBE's platform fee is 10% (plus standard card processing) — that's it. Spotify pays artists ~$0.004 per stream.")
+                Text("Artists keep 90% of every dollar of fan support. VYBE's platform fee is 10% (plus standard card processing) — that's the whole split. No hidden cuts.")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(VYBE.textSecondary)
                     .lineSpacing(3)
@@ -127,66 +92,54 @@ struct EarningsTransparencyView: View {
         .overlay(RoundedRectangle(cornerRadius: 20).stroke(VYBE.green.opacity(0.35), lineWidth: 1))
     }
 
-    // MARK: - Breakdown
+    // MARK: - Support channels (no amounts)
 
-    private var breakdownSection: some View {
+    private var channelsCard: some View {
         VStack(alignment: .leading, spacing: 14) {
-            SectionHeader(title: "Earnings Breakdown")
-            earningsRow("heart.fill", "Direct Fan Tips", earnings.directSupport, VYBE.magenta)
-            earningsRow("music.note.list", "Exclusive Drops", earnings.dropSales, VYBE.cyan)
-            earningsRow("tshirt.fill", "Merch Sales", earnings.merchRevenue, VYBE.blue)
-            earningsRow("crown.fill", "Superfan Tier", earnings.superfanRevenue, VYBE.gold)
-            earningsRow("ticket.fill", "Event Revenue", earnings.eventRevenue, VYBE.green)
-            Divider().overlay(VYBE.stroke)
-            earningsRow("dollarsign.circle.fill", "Total fan support", earnings.total, VYBE.text, bold: true)
-            earningsRow("building.columns.fill", "VYBE platform fee (10%)", Int(Double(earnings.total) * 0.1), VYBE.textTertiary)
-            earningsRow("checkmark.seal.fill", "Artist keeps", earnings.total - Int(Double(earnings.total) * 0.1), VYBE.green, bold: true)
-            Text("Plus standard card-processing fees. No hidden cuts — this is the whole split.")
-                .font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textTertiary).lineSpacing(2).padding(.top, 2)
+            SectionHeader(title: "Ways to support")
+            channelRow("heart.fill", "Direct tips", "Send support straight to the artist", VYBE.magenta)
+            channelRow("music.note.list", "Exclusive drops", "Unlock limited tracks, sleeves & demos", VYBE.cyan)
+            channelRow("tshirt.fill", "Merch", "Buy from the artist's store", VYBE.blue)
+            channelRow("crown.fill", "Superfan tier", "Ongoing support for your favorites", VYBE.gold)
+            channelRow("ticket.fill", "Shows & events", "Tickets, RSVPs, and meetups", VYBE.green)
         }
         .padding(16)
         .vybeCard(corner: 20)
     }
 
-    private func earningsRow(_ icon: String, _ label: String, _ value: Int, _ color: Color, bold: Bool = false) -> some View {
+    private func channelRow(_ icon: String, _ title: String, _ subtitle: String, _ color: Color) -> some View {
         HStack(spacing: 12) {
-            Image(systemName: icon).font(.system(size: 15)).foregroundStyle(color).frame(width: 22)
-            Text(label)
-                .font(.system(size: bold ? 15 : 14, weight: bold ? .heavy : .semibold, design: bold ? .rounded : .default))
-                .foregroundStyle(bold ? VYBE.text : VYBE.textSecondary)
+            Image(systemName: icon).font(.system(size: 15)).foregroundStyle(color).frame(width: 24)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title).font(.system(size: 14, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                Text(subtitle).font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+            }
             Spacer()
-            Text("$\(value.grouped)")
-                .font(.system(size: bold ? 17 : 14, weight: .black, design: .rounded))
-                .foregroundStyle(bold ? color : VYBE.text)
         }
     }
 
-    // MARK: - Per-stream math
+    // MARK: - Why it's different
 
-    private var perStreamMath: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SectionHeader(title: "The Math")
+    private var whyDifferent: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(title: "Why it's different")
             HStack(spacing: 0) {
-                mathColumn("Spotify", "1 stream", "$0.004", "~$4 per 1K", VYBE.textSecondary)
-                Divider().frame(height: 70).overlay(VYBE.stroke)
-                mathColumn("VYBE", "1 tip from a fan", "$5.00", "~$500 per 100 tips", VYBE.green)
+                whyColumn("Streaming", "music.note", "Passive plays for a fraction of a cent", VYBE.textSecondary)
+                Divider().frame(height: 80).overlay(VYBE.stroke)
+                whyColumn("VYBE", "bolt.heart.fill", "Real, direct support from fans who show up", VYBE.green)
             }
         }
         .padding(16)
         .vybeCard(corner: 20)
     }
 
-    private func mathColumn(_ platform: String, _ unit: String, _ rate: String, _ scale: String, _ color: Color) -> some View {
-        VStack(spacing: 6) {
-            Text(platform)
-                .font(.system(size: 11, weight: .heavy, design: .rounded))
-                .tracking(1)
-                .foregroundStyle(color)
-            Text(unit).font(.system(size: 13, weight: .semibold)).foregroundStyle(VYBE.text)
-            Text(rate).font(.system(size: 20, weight: .black, design: .rounded)).foregroundStyle(color)
-            Text(scale).font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+    private func whyColumn(_ platform: String, _ icon: String, _ desc: String, _ color: Color) -> some View {
+        VStack(spacing: 8) {
+            Text(platform).font(.system(size: 11, weight: .heavy, design: .rounded)).tracking(1).foregroundStyle(color)
+            Image(systemName: icon).font(.system(size: 22)).foregroundStyle(color)
+            Text(desc).font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary).multilineTextAlignment(.center)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity).padding(.horizontal, 8)
     }
 
     // MARK: - Bottom message
@@ -199,7 +152,7 @@ struct EarningsTransparencyView: View {
             Text("This is why VYBE exists.")
                 .font(.system(size: 16, weight: .heavy, design: .rounded))
                 .foregroundStyle(VYBE.text)
-            Text("Fans who support artists earn rewards, recognition, and status. Artists earn real money. The streaming model isn't the only way.")
+            Text("Fans who support artists early earn rewards, recognition, and status. Artists earn far more — and keep 90%. The streaming model isn't the only way.")
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(VYBE.textSecondary)
                 .multilineTextAlignment(.center)

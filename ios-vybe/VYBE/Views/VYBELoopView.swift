@@ -152,8 +152,8 @@ struct VYBELoopView: View {
     }
 
     private func attributedString() -> AttributedString {
-        var s = AttributedString("This underground artist earns $880/yr from streaming.")
-        if let range = s.range(of: "$880/yr") { s[range].foregroundColor = UIColor(VYBE.magenta) }
+        var s = AttributedString("Streaming pays this underground artist almost nothing.")
+        if let range = s.range(of: "almost nothing") { s[range].foregroundColor = UIColor(VYBE.magenta) }
         return s
     }
 
@@ -252,11 +252,11 @@ struct VYBELoopView: View {
                     }
                     .neonGlow(VYBE.magenta, radius: 20)
 
-                    // Artist earnings ticker
+                    // Artist support ticker
                     HStack(spacing: 8) {
-                        Image(systemName: "chart.line.uptrend.xyaxis")
+                        Image(systemName: "bolt.heart.fill")
                             .foregroundStyle(VYBE.green)
-                        Text("\(app.loopArtist.name) earned \(String(format: "$%.2f", app.loopReceipt?.artistEarnedUSD ?? 3.80))")
+                        Text("\(app.loopArtist.name) just got real, direct support")
                             .font(.system(size: 16, weight: .heavy, design: .rounded))
                             .foregroundStyle(VYBE.green)
                     }

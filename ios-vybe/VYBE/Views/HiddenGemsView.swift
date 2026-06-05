@@ -269,9 +269,6 @@ struct DiscoveryGemCard: View {
 
     private var artist: Artist { result.artist }
     private var discovered: Bool { app.discoveredArtists.contains(artist.id) }
-    private var earningsRatio: Int {
-        max(1, artist.fanFundedMonthlyUSD / max(artist.streamingEquivUSD, 1))
-    }
     private var tierColor: Color {
         switch artist.popularityTier {
         case "undiscovered": return VYBE.green
@@ -336,12 +333,12 @@ struct DiscoveryGemCard: View {
                 }
             }
 
-            // Earnings transparency signal
+            // Support signal (no income amounts)
             HStack(spacing: 6) {
-                Image(systemName: "dollarsign.circle.fill").font(.system(size: 11)).foregroundStyle(VYBE.green)
-                Text("Fan-funded $\(artist.fanFundedMonthlyUSD.compact)/mo")
+                Image(systemName: "bolt.heart.fill").font(.system(size: 11)).foregroundStyle(VYBE.green)
+                Text("Fan-supported here")
                     .font(.system(size: 12, weight: .bold)).foregroundStyle(VYBE.green)
-                Text("· \(earningsRatio)x vs streaming")
+                Text("· earns more than streaming")
                     .font(.system(size: 12, weight: .semibold)).foregroundStyle(VYBE.textSecondary)
             }
 

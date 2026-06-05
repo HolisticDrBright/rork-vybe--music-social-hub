@@ -95,12 +95,12 @@ struct DropCampaignView: View {
     private func goals(_ c: DropCampaign) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Campaign goals").font(.system(size: 13, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.textSecondary)
-            GoalBar(label: "Fan support", value: "$\(c.raisedUSD) / $\(c.supportGoalUSD)", progress: c.fundingProgress, color: VYBE.green)
+            GoalBar(label: "Fan support", value: "\(Int(c.fundingProgress * 100))% to goal", progress: c.fundingProgress, color: VYBE.green)
             GoalBar(label: "Boosts", value: "\(c.boosts) / \(c.boostGoal)", progress: c.boostProgress, color: VYBE.magenta)
             GoalBar(label: "Pre-saves", value: "\(c.presaves) / \(c.presaveGoal)", progress: c.presaveProgress, color: VYBE.cyan)
             HStack(spacing: 8) {
-                Image(systemName: "dollarsign.circle.fill").foregroundStyle(VYBE.gold)
-                Text("Artist earnings goal: $\(c.earningsGoalUSD) · keeps 90%").font(.system(size: 12, weight: .semibold)).foregroundStyle(VYBE.gold)
+                Image(systemName: "bolt.heart.fill").foregroundStyle(VYBE.gold)
+                Text("Support goes directly to \(c.artistName) — they keep 90%").font(.system(size: 12, weight: .semibold)).foregroundStyle(VYBE.gold)
             }
         }
         .padding(16).vybeCard(corner: 18)

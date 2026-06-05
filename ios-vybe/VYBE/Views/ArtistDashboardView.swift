@@ -31,7 +31,7 @@ struct ArtistDashboardView: View {
                         recognitionCard
                     }
                     Group {
-                        SectionHeader(title: "Top Fans by Revenue Driven")
+                        SectionHeader(title: "Top Fans by Streams Driven")
                         topFansByRevenue
                         rewardTopFans
                         SectionHeader(title: "Recent Fan Support")
@@ -174,23 +174,15 @@ struct ArtistDashboardView: View {
     // MARK: - Earnings vs streaming
 
     private var earningsVsStreaming: some View {
-        HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("$\(impact.earnings.total.grouped)")
-                    .font(.system(size: 26, weight: .black, design: .rounded)).foregroundStyle(VYBE.green)
-                Text("fan-funded this month").font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary)
+        HStack(spacing: 14) {
+            Image(systemName: "bolt.heart.fill").font(.system(size: 26)).foregroundStyle(VYBE.green)
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Fan-funded, not pennies per stream")
+                    .font(.system(size: 16, weight: .black, design: .rounded)).foregroundStyle(VYBE.text)
+                Text("Direct fan support reaches you in full — worth far more than streaming plays, and you keep 90%.")
+                    .font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineSpacing(2)
             }
-            Spacer()
-            VStack(alignment: .trailing, spacing: 2) {
-                Text("$\(impact.earnings.streamingEquivalent.grouped)")
-                    .font(.system(size: 18, weight: .black, design: .rounded)).foregroundStyle(VYBE.textSecondary)
-                Text("on streaming").font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textTertiary)
-            }
-            Divider().frame(height: 40).overlay(VYBE.stroke)
-            VStack(spacing: 2) {
-                Text("\(impact.multiplier)x").font(.system(size: 22, weight: .black, design: .rounded)).foregroundStyle(VYBE.magenta)
-                Text("more").font(.system(size: 10, weight: .semibold)).foregroundStyle(VYBE.textSecondary)
-            }
+            Spacer(minLength: 0)
         }
         .padding(16).vybeCard(corner: 20)
     }
@@ -208,7 +200,7 @@ struct ArtistDashboardView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("@\(fan.fan.name) is a rising top fan")
                     .font(.system(size: 14, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
-                Text("Drove $\(fan.revenueDriven) · \(fan.streamsDriven.compact) streams")
+                Text("Top supporter · \(fan.streamsDriven.compact) streams driven")
                     .font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary)
             }
             Spacer()
@@ -243,13 +235,13 @@ struct ArtistDashboardView: View {
                             Text("@\(tf.fan.name)").font(.system(size: 14, weight: .bold)).foregroundStyle(VYBE.text)
                             if tf.isYou { NeonTag(text: "YOU", color: VYBE.magenta) }
                         }
-                        Text("\(tf.streamsDriven.compact) streams driven · \(tf.fan.city)")
+                        Text(tf.fan.city)
                             .font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary)
                     }
                     Spacer()
                     VStack(alignment: .trailing, spacing: 0) {
-                        Text("$\(tf.revenueDriven)").font(.system(size: 15, weight: .black, design: .rounded)).foregroundStyle(VYBE.green)
-                        Text("revenue").font(.system(size: 9, weight: .semibold)).foregroundStyle(VYBE.textTertiary)
+                        Text("\(tf.streamsDriven.compact)").font(.system(size: 15, weight: .black, design: .rounded)).foregroundStyle(VYBE.green)
+                        Text("streams").font(.system(size: 9, weight: .semibold)).foregroundStyle(VYBE.textTertiary)
                     }
                 }
                 .padding(12).vybeCard(corner: 14)
@@ -270,7 +262,7 @@ struct ArtistDashboardView: View {
                         Text("\(ev.minutesAgo)m ago").font(.system(size: 10, weight: .medium)).foregroundStyle(VYBE.textTertiary)
                     }
                     Spacer()
-                    Text("+\(ev.dollarsLabel)").font(.system(size: 13, weight: .black, design: .rounded)).foregroundStyle(VYBE.green)
+                    Image(systemName: "heart.fill").font(.system(size: 13)).foregroundStyle(VYBE.green)
                 }
                 .padding(.vertical, 8).padding(.horizontal, 12).vybeCard(corner: 12)
             }
@@ -363,7 +355,7 @@ struct ArtistDashboardView: View {
                 HStack(spacing: 10) {
                     miniMetric("3,402", "chats today", VYBE.cyan)
                     miniMetric("4.9", "fan rating", VYBE.gold)
-                    miniMetric("+$2.1K", "paid AI revenue", VYBE.green)
+                    miniMetric("128", "new superfans", VYBE.green)
                 }
             }
         }

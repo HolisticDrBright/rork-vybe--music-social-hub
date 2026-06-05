@@ -15,12 +15,6 @@ struct SupportReceiptView: View {
     @State private var shimmer = false
     @State private var appeared = false
 
-    private var artistEarnedLabel: String {
-        receipt.artistEarnedUSD > 0
-            ? String(format: "$%.2f", receipt.artistEarnedUSD)
-            : "$\(receipt.amountDriven)"
-    }
-
     var body: some View {
         ZStack {
             VYBE.bg.ignoresSafeArea()
@@ -130,13 +124,11 @@ struct SupportReceiptView: View {
                     NeonTag(text: badge, color: VYBE.gold, icon: "rosette")
                 }
 
-                // Impact metrics
+                // Impact metrics (fan-side status — no artist income shown)
                 HStack(spacing: 0) {
                     receiptMetric("+\(receipt.vybeScoreEarned)", "VYBE Score earned", VYBE.gold)
                     Divider().frame(height: 44).overlay(VYBE.stroke)
-                    receiptMetric(artistEarnedLabel, "Artist earned", VYBE.green)
-                    Divider().frame(height: 44).overlay(VYBE.stroke)
-                    receiptMetric(receipt.streamingComparison, "vs streaming", VYBE.magenta)
+                    receiptMetric("Direct", "real support, not pennies per stream", VYBE.green)
                 }
 
                 Divider().overlay(VYBE.stroke)

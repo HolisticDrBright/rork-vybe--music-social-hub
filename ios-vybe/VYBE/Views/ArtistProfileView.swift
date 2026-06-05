@@ -171,17 +171,15 @@ struct ArtistProfileView: View {
     // MARK: - Earnings Banner
 
     private var earningsBanner: some View {
-        let e = Mock.earnings(for: artistId)
-        let ratio = max(1, Int(Double(e.total) / Double(max(e.streamingEquivalent, 1))))
-        return NavigationLink(value: Route.earnings(artistId)) {
+        NavigationLink(value: Route.earnings(artistId)) {
             HStack(spacing: 12) {
                 ZStack {
                     Circle().fill(VYBE.green.opacity(0.15)).frame(width: 44, height: 44)
-                    Image(systemName: "dollarsign.circle.fill").font(.system(size: 18)).foregroundStyle(VYBE.green)
+                    Image(systemName: "bolt.heart.fill").font(.system(size: 18)).foregroundStyle(VYBE.green)
                 }
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Earned $\(e.total.grouped) this month").font(.system(size: 15, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
-                    Text("\(ratio)x what streaming would pay · Artist keeps 90%").font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.green)
+                    Text("Supported directly by fans").font(.system(size: 15, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
+                    Text("Earns far more than streaming · artist keeps 90%").font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.green)
                 }
                 Spacer()
                 Image(systemName: "chevron.right").font(.system(size: 13)).foregroundStyle(VYBE.textTertiary)
@@ -300,39 +298,33 @@ struct ArtistProfileView: View {
     private var earningsTab: some View {
         VStack(alignment: .leading, spacing: 14) {
             let e = Mock.earnings(for: artistId)
-            let ratio = max(1, Int(Double(e.total) / Double(max(e.streamingEquivalent, 1))))
-            HStack(spacing: 8) {
-                VStack(spacing: 2) {
-                    Text("$\(e.total.grouped)").font(.system(size: 28, weight: .black, design: .rounded)).foregroundStyle(VYBE.text)
-                    Text("from direct fan support").font(.system(size: 11)).foregroundStyle(VYBE.textSecondary)
-                }
-                Spacer()
-                VStack(spacing: 2) {
-                    Text("$\(e.streamingEquivalent.grouped)").font(.system(size: 22, weight: .black, design: .rounded)).foregroundStyle(VYBE.textSecondary)
-                    Text("streaming equivalent").font(.system(size: 11)).foregroundStyle(VYBE.textTertiary)
-                }
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Supported directly by fans")
+                    .font(.system(size: 20, weight: .black, design: .rounded)).foregroundStyle(VYBE.text)
+                Text("On VYBE, support reaches \(artist.name) directly — worth far more than passive streaming plays.")
+                    .font(.system(size: 12)).foregroundStyle(VYBE.textSecondary).lineSpacing(2)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(14).vybeCard(corner: 16)
             HStack(spacing: 0) {
-                earningsBreakdownItem("heart.fill", "Tips", e.directSupport, VYBE.magenta)
-                earningsBreakdownItem("music.note.list", "Drops", e.dropSales, VYBE.cyan)
-                earningsBreakdownItem("tshirt.fill", "Merch", e.merchRevenue, VYBE.blue)
-                earningsBreakdownItem("ticket.fill", "Events", e.eventRevenue, VYBE.green)
+                earningsBreakdownItem("heart.fill", "Tips", VYBE.magenta)
+                earningsBreakdownItem("music.note.list", "Drops", VYBE.cyan)
+                earningsBreakdownItem("tshirt.fill", "Merch", VYBE.blue)
+                earningsBreakdownItem("ticket.fill", "Events", VYBE.green)
             }
             .padding(10).vybeCard(corner: 16)
             NavigationLink(value: Route.earnings(artistId)) {
-                Text("Full earnings transparency →").font(.system(size: 14, weight: .bold)).foregroundStyle(VYBE.green).frame(maxWidth: .infinity).padding(.vertical, 8)
+                Text("How support works →").font(.system(size: 14, weight: .bold)).foregroundStyle(VYBE.green).frame(maxWidth: .infinity).padding(.vertical, 8)
             }
             Text("Artist keeps \(e.artistKeepsPercent)% of every dollar of fan support — VYBE's fee is 10% (plus card processing). Compare: Spotify pays ~$0.004 per stream.")
                 .font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineSpacing(3)
         }
     }
 
-    private func earningsBreakdownItem(_ icon: String, _ label: String, _ value: Int, _ color: Color) -> some View {
+    private func earningsBreakdownItem(_ icon: String, _ label: String, _ color: Color) -> some View {
         VStack(spacing: 4) {
-            Image(systemName: icon).font(.system(size: 13)).foregroundStyle(color)
-            Text("$\(value.compact)").font(.system(size: 13, weight: .black, design: .rounded)).foregroundStyle(VYBE.text)
-            Text(label).font(.system(size: 10)).foregroundStyle(VYBE.textSecondary)
+            Image(systemName: icon).font(.system(size: 15)).foregroundStyle(color)
+            Text(label).font(.system(size: 11, weight: .semibold)).foregroundStyle(VYBE.text)
         }
         .frame(maxWidth: .infinity)
     }
