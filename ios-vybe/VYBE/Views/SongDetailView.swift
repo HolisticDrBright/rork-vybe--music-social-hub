@@ -33,7 +33,6 @@ struct SongDetailView: View {
     private var song: Song { Mock.allSongs.first { $0.id == songId } ?? Mock.songs[0] }
     private var artist: Artist { Mock.artist(song.artistId) }
     private var saved: Bool { app.savedSongs.contains(songId) }
-    private var earnings: ArtistEarnings { Mock.earnings(for: song.artistId) }
 
     var body: some View {
         ZStack {
@@ -269,7 +268,7 @@ struct SongDetailView: View {
                     Image(systemName: "bolt.heart.fill").font(.system(size: 20)).foregroundStyle(VYBE.green)
                     Text("Direct").font(.system(size: 22, weight: .black, design: .rounded)).foregroundStyle(VYBE.green)
                     Text("Real artist support").font(.system(size: 10, weight: .semibold)).foregroundStyle(VYBE.textSecondary)
-                    Text("keeps 90%").font(.system(size: 10, weight: .bold)).foregroundStyle(VYBE.green)
+                    Text("direct to artist").font(.system(size: 10, weight: .bold)).foregroundStyle(VYBE.green)
                 }
                 .frame(maxWidth: .infinity).padding(.vertical, 10).background(VYBE.green.opacity(0.06), in: .rect(cornerRadius: 12))
             }

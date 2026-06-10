@@ -53,7 +53,7 @@ struct OnboardingView: View {
                     thesisPage(
                         icon: "bolt.shield.fill",
                         boldText: "VYBE flips the model.\nArtists earn. Fans get rewarded.",
-                        bodyText: "Artists keep 90% of every dollar fans give — tips, drops, merch, superfan tiers. And fans earn VYBE Score, badges, VIP access, and real-world prizes for supporting artists early.",
+                        bodyText: "Fans support artists directly — tips, drops, merch, superfan tiers. And fans earn VYBE Score, badges, VIP access, and real-world prizes for supporting artists early.",
                         accent: VYBE.gold
                     ).tag(1)
 

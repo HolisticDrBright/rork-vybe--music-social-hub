@@ -100,7 +100,7 @@ struct DropCampaignView: View {
             GoalBar(label: "Pre-saves", value: "\(c.presaves) / \(c.presaveGoal)", progress: c.presaveProgress, color: VYBE.cyan)
             HStack(spacing: 8) {
                 Image(systemName: "bolt.heart.fill").foregroundStyle(VYBE.gold)
-                Text("Support goes directly to \(c.artistName) — they keep 90%").font(.system(size: 12, weight: .semibold)).foregroundStyle(VYBE.gold)
+                Text("Support goes directly to \(c.artistName)").font(.system(size: 12, weight: .semibold)).foregroundStyle(VYBE.gold)
             }
         }
         .padding(16).vybeCard(corner: 18)

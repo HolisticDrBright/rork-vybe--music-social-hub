@@ -3,8 +3,8 @@
 //  VYBE
 //
 //  Why supporting an artist here matters — qualitative. We tell fans that
-//  artists earn far more from direct support than from streaming, and that
-//  artists keep 90% — without putting a dollar figure on any artist's income.
+//  artists earn far more from direct support than from streaming — without
+//  putting a dollar figure or a revenue-split percentage on anything.
 //
 
 import SwiftUI
@@ -63,22 +63,22 @@ struct EarningsTransparencyView: View {
         .overlay(RoundedRectangle(cornerRadius: 22).stroke(VYBE.green.opacity(0.3), lineWidth: 1))
     }
 
-    // MARK: - 90% revenue-share badge
+    // MARK: - Artist-first badge
 
     private var keepBadge: some View {
         HStack(spacing: 14) {
             ZStack {
                 Circle().fill(VYBE.green.opacity(0.15)).frame(width: 60, height: 60)
                 Circle().stroke(VYBE.green.opacity(0.4), lineWidth: 2).frame(width: 68, height: 68)
-                Text("90%")
-                    .font(.system(size: 22, weight: .black, design: .rounded))
+                Image(systemName: "bolt.heart.fill")
+                    .font(.system(size: 24, weight: .black))
                     .foregroundStyle(VYBE.green)
             }
             VStack(alignment: .leading, spacing: 4) {
-                Text("Artists keep 90%")
+                Text("Artist-first economics")
                     .font(.system(size: 17, weight: .heavy, design: .rounded))
                     .foregroundStyle(VYBE.text)
-                Text("Artists keep 90% of every dollar of fan support. VYBE's platform fee is 10% (plus standard card processing) — that's the whole split. No hidden cuts.")
+                Text("Your support goes to the artist — not a label machine, not an algorithm. No hidden cuts.")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(VYBE.textSecondary)
                     .lineSpacing(3)
@@ -86,7 +86,7 @@ struct EarningsTransparencyView: View {
         }
         .padding(16)
         .background {
-            ZStack { VYBE.card; HoloArt(seed: "keep90").opacity(0.12) }
+            ZStack { VYBE.card; HoloArt(seed: "artistfirst").opacity(0.12) }
                 .clipShape(.rect(cornerRadius: 20))
         }
         .overlay(RoundedRectangle(cornerRadius: 20).stroke(VYBE.green.opacity(0.35), lineWidth: 1))
@@ -152,7 +152,7 @@ struct EarningsTransparencyView: View {
             Text("This is why VYBE exists.")
                 .font(.system(size: 16, weight: .heavy, design: .rounded))
                 .foregroundStyle(VYBE.text)
-            Text("Fans who support artists early earn rewards, recognition, and status. Artists earn far more — and keep 90%. The streaming model isn't the only way.")
+            Text("Fans who support artists early earn rewards, recognition, and status. Artists earn far more — directly from the people who care. The streaming model isn't the only way.")
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(VYBE.textSecondary)
                 .multilineTextAlignment(.center)

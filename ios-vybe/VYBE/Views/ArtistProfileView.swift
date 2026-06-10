@@ -179,7 +179,7 @@ struct ArtistProfileView: View {
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Supported directly by fans").font(.system(size: 15, weight: .heavy, design: .rounded)).foregroundStyle(VYBE.text)
-                    Text("Earns far more than streaming · artist keeps 90%").font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.green)
+                    Text("Earns far more here than from streaming").font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.green)
                 }
                 Spacer()
                 Image(systemName: "chevron.right").font(.system(size: 13)).foregroundStyle(VYBE.textTertiary)
@@ -297,7 +297,6 @@ struct ArtistProfileView: View {
 
     private var earningsTab: some View {
         VStack(alignment: .leading, spacing: 14) {
-            let e = Mock.earnings(for: artistId)
             VStack(alignment: .leading, spacing: 6) {
                 Text("Supported directly by fans")
                     .font(.system(size: 20, weight: .black, design: .rounded)).foregroundStyle(VYBE.text)
@@ -316,7 +315,7 @@ struct ArtistProfileView: View {
             NavigationLink(value: Route.earnings(artistId)) {
                 Text("How support works →").font(.system(size: 14, weight: .bold)).foregroundStyle(VYBE.green).frame(maxWidth: .infinity).padding(.vertical, 8)
             }
-            Text("Artist keeps \(e.artistKeepsPercent)% of every dollar of fan support — VYBE's fee is 10% (plus card processing). Compare: Spotify pays ~$0.004 per stream.")
+            Text("Fan support goes directly to the artist. Compare: Spotify pays ~$0.004 per stream.")
                 .font(.system(size: 12, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineSpacing(3)
         }
     }

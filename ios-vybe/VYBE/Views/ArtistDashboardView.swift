@@ -179,7 +179,7 @@ struct ArtistDashboardView: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text("Fan-funded, not pennies per stream")
                     .font(.system(size: 16, weight: .black, design: .rounded)).foregroundStyle(VYBE.text)
-                Text("Direct fan support reaches you in full — worth far more than streaming plays, and you keep 90%.")
+                Text("Direct fan support reaches you — worth far more than streaming plays.")
                     .font(.system(size: 11, weight: .medium)).foregroundStyle(VYBE.textSecondary).lineSpacing(2)
             }
             Spacer(minLength: 0)
